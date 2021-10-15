@@ -47,6 +47,14 @@ namespace konkey_kong
             if (speed.Y < 4) { speed.Y *= (float)1.1; }
             pos += speed;
         }
+
+    public void playerJump()
+        {
+            //add to make player go to top of screen, then jump straight up and then fall down on the position of the tile next to beloved
+
+
+
+        }
     public void PlayerMoveStart(Direction direction)
     {
         if (type == EntityType.Player || state == EntityState.Default)

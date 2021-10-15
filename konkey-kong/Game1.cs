@@ -299,12 +299,16 @@ namespace konkey_kong
                 case GameState.InGame:
 
                     float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
                     fireTimer -= elapsed;
 
-                    if (fireTimer < 0)
+                    if (switchList.All(s => s.toggled == false))
                     {
-                        fireTimer = TIMER;
-                        flameCreated = false;
+                        if (fireTimer < 0)
+                        {
+                            fireTimer = TIMER;
+                            flameCreated = false;
+                        }
                     }
 
                     if (!flameCreated) { 
