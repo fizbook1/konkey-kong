@@ -278,6 +278,18 @@
 /processorParam:TextureFormat=Color
 /build:player_spritesheet.png
 
+#begin player1ico.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:player1ico.png
+
 #begin player2_spritesheet.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -289,6 +301,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:player2_spritesheet.png
+
+#begin player2ico.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:player2ico.png
 
 #begin smolbutton.png
 /importer:TextureImporter

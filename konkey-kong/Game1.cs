@@ -14,12 +14,15 @@ namespace konkey_kong
     public class Game1 : Game
     {
         
+
         public enum GameState { Title = 0, InGame = 1, GameOver = 2}
 
         GameState gameState = GameState.Title;
 
         Texture2D tileTex, ladderTex, blankTex, playerTex, player2Tex, backgroundTex, background2Tex, background3Tex, tileCapLTex, tileCapRTex, 
-            tileCapBothTex, fireTex, menuButtonTex, smolButtonTex, healthTex, breadTex, hammerTex, hammerPickupTex, bossTex, switchTex;
+            tileCapBothTex, fireTex, menuButtonTex, smolButtonTex, healthTex, breadTex, hammerTex, hammerPickupTex, bossTex, switchTex, player1IconTex,
+            player2IconTex;
+        SoundEffect flameCreateFX, flameKillFX, pickupFX;
 
         Tile[,] tileArray = new Tile[20, 20];
         List<DummyTile> dummyTileList;
@@ -34,33 +37,31 @@ namespace konkey_kong
         int? killPointString;
 
         Rectangle menuButton;
+        Rectangle demoButton;
         Rectangle player1Button;
         Rectangle player2Button;
-
-        SoundEffect flameCreateFX;
-        SoundEffect flameKillFX;
-        SoundEffect pickupFX;
 
         private SpriteFont font;
         Vector2 mousePos;
 
+        bool demoActive;
+        bool finalScoreCreated = false;
+        float gameOverTimer = 4;
         float fireTimer = 5;         //timer to spawn fires
-        const float TIMER = (float)5;
-        bool flameCreated = true;
-        int? killFlame;
 
+        const float DEMOTIMER = 2;
+        float demoTimer = 2;
+        const float TIMER = 5;
+        bool flameCreated = true;
+
+        int? killFlame;
         int? killPickup;
 
         Hammer hammer;
-        Switch switch1;
-        Switch switch2;
-        int createdSwitches = 0;
-
         Entity boss;
         Entity beloved;
         Entity player;
 
-        
         int health = 3;
         int score = 0;
         bool scoreCalculated = false;
@@ -81,8 +82,6 @@ namespace konkey_kong
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -109,6 +108,8 @@ namespace konkey_kong
             hammerPickupTex = Content.Load<Texture2D>(@"hammerpickup");
             bossTex = Content.Load<Texture2D>(@"konkey");
             switchTex = Content.Load<Texture2D>(@"switch");
+            player1IconTex = Content.Load<Texture2D>(@"player1ico");
+            player2IconTex = Content.Load<Texture2D>(@"player2ico");
             font = Content.Load<SpriteFont>(@"font");
             flameCreateFX = Content.Load<SoundEffect>(@"flamecreation");
             flameKillFX = Content.Load<SoundEffect>(@"bonk");
@@ -124,16 +125,15 @@ namespace konkey_kong
 
             //tileArray = new Tile[20, 20];
 
-            boss = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), bossTex, false, new Vector2(0, 0), EntityType.KonkeyKong, 1);
-            player = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), playerTex, false, new Vector2(0, 0), EntityType.Player, 1);
-            beloved = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), player2Tex, false, new Vector2(0, 0), EntityType.Beloved, 1);
-            switch1 = new Switch(new Vector2(5, 0), switchTex, new Rectangle(5, 0, 40, 40));
-            switch2 = new Switch(new Vector2(5, 0), switchTex, new Rectangle(5, 0, 40, 40));
+            boss = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), bossTex, false, new Vector2(0, 0), EntityType.KonkeyKong, 1, 0, 0);
+            player = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), playerTex, false, new Vector2(0, 0), EntityType.Player, 1, 0, 0);
+            beloved = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), player2Tex, false, new Vector2(0, 0), EntityType.Beloved, 1, 0, 0);
             hammer = new Hammer(new Vector2(0, 0), hammerTex, new Rectangle(0, 0, 100, 40));
 
             player1Button = new Rectangle(300, 450, 175, 150);
             player2Button = new Rectangle(525, 450, 175, 150);
-            menuButton = new Rectangle(300, 575, 400, 150);
+            menuButton = new Rectangle(300, 625, 400, 150);
+            demoButton = new Rectangle(300, 800, 400, 150);
 
             healthBarList = new List<HealthBar>();
 
@@ -144,7 +144,6 @@ namespace konkey_kong
             highscoreList = File.ReadAllLines("highscores.txt").ToList();
 
             List<string> strings = new List<string>();
-
             StreamReader sr = new StreamReader("map.txt");
 
             int healthBarTempPosX = Window.ClientBounds.Width - 200;
@@ -156,12 +155,9 @@ namespace konkey_kong
                 healthBarTempPosX += healthTex.Width / 4 + 10;
             }
 
-
             while (!sr.EndOfStream)
             {
-
                 strings.Add(sr.ReadLine());
-
             }
 
             sr.Close();
@@ -243,21 +239,21 @@ namespace konkey_kong
                     {
                         player.pos = new Vector2(i * 50 + 5, j * 50);
                         player.size = new Rectangle(i * 50 + 5, j * 50, 40, 40);
+                        player.tilePosX = i;
+                        player.tilePosY = j;
                         tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
                     }
+
                     if (strings[j][i] == 'g')
                     {
                         beloved.pos = new Vector2(i * 50 + 5, j * 50);
                         beloved.size = new Rectangle(i * 50 + 5, j * 50, 40, 40);
+                        beloved.tilePosX = i;
+                        beloved.tilePosY = j;
                         tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
                     }
-
                 }
-
-
             }
-
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
@@ -279,6 +275,7 @@ namespace konkey_kong
                         player.tex = playerTex;
                         beloved.tex = player2Tex;
                         fireTimer = 5;
+                        demoActive = false;
                     }
 
                     if (player2Button.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
@@ -287,11 +284,18 @@ namespace konkey_kong
                         player.tex = player2Tex;
                         beloved.tex = playerTex;
                         fireTimer = 5;
+                        demoActive = false;
                     }
 
                     if (menuButton.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
                     {
                         gameState = GameState.GameOver;
+                    }
+
+                    if (demoButton.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        gameState = GameState.InGame;
+                        demoActive = true;
                     }
 
                     break;
@@ -300,70 +304,95 @@ namespace konkey_kong
 
                     float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+                    demoTimer -= elapsed;
                     fireTimer -= elapsed;
 
-                    if (switchList.All(s => s.toggled == false))
+                    if (finalScoreCreated)
                     {
-                        if (fireTimer < 0)
-                        {
-                            fireTimer = TIMER;
-                            flameCreated = false;
-                        }
+                        gameOverTimer -= elapsed;
                     }
 
-                    if (!flameCreated) { 
+                    if (gameOverTimer <= 0)
+                    {
+                        gameState = GameState.GameOver;
+                    }
+
+                    if (demoTimer <= 0)
+                    {
+                        demoTimer = DEMOTIMER;
+                    }
+
+                    if ( fireTimer < 0 && !finalScoreCreated )
+                    {
+                        fireTimer = TIMER;
+                        flameCreated = false;
+                    }
+
+                    if ( !flameCreated && !finalScoreCreated ) { 
 
                         int flameCreatorArrayPosX = rnd.Next(1, tileArray.GetLength(0));
                         int flameCreatorArrayPosY = rnd.Next(1, tileArray.GetLength(1));
-
                         double flameCreatorSpeedMult = rnd.Next(100, 140);
 
                         if (tileArray[flameCreatorArrayPosX, flameCreatorArrayPosY].type != TileType.Blank)
                         {
-                            Entity flameCreation = new Entity(new Vector2(flameCreatorArrayPosX * 50 + 5, flameCreatorArrayPosY * 50), new Rectangle(flameCreatorArrayPosX * 50 + 5, flameCreatorArrayPosY * 50, 40, 40), fireTex, false, new Vector2(0, 0), EntityType.Enemy, flameCreatorSpeedMult/100);
+                            Entity flameCreation = new Entity(new Vector2(flameCreatorArrayPosX * 50 + 5, flameCreatorArrayPosY * 50), new Rectangle(flameCreatorArrayPosX * 50 + 5, flameCreatorArrayPosY * 50, 40, 40), fireTex, false, new Vector2(0, 0), EntityType.Enemy, flameCreatorSpeedMult/100, flameCreatorArrayPosX, flameCreatorArrayPosY);
                             enemyList.Add(flameCreation);
                             flameCreated = true;
                             flameCreateFX.Play();
                         }
                     }
 
-                    for (int j = 0; j < tileArray.GetLength(0); j++)
-                    {
-                        for (int i = 0; i < tileArray.GetLength(1); i++)
+                    int demoRandomDir = rnd.Next(0, 12);
+                    int demoRandomDirX = rnd.Next(0, 2);
+                    if (player.tilePosX < 19 && player.tilePosY < 19 && player.tilePosX > 0)
                         {
-                            if (i < 19 && j < 19 && i > 0)
+                            if (tileArray[player.tilePosX, player.tilePosY].type == TileType.Ladder)
                             {
-                                if (tileArray[i + 1, j].type != TileType.Blank && tileArray[i, j].size.Contains(player.pos))
+                                if (keyboardState.IsKeyDown(Keys.Up) && player.isMoving == false && !demoActive)
                                 {
-                                    if (keyboardState.IsKeyDown(Keys.Right) && player.isMoving == false)
-                                    {
-                                        player.PlayerMoveStart(Direction.Right);
-                                    }
+                                    player.EntityMoveStart(Direction.Up);
                                 }
-                                if (tileArray[i - 1, j].type != TileType.Blank && tileArray[i, j].size.Contains(player.pos))
+                                if (demoActive && player.isMoving == false && demoRandomDir >= 6)
                                 {
-                                    if (keyboardState.IsKeyDown(Keys.Left) && player.isMoving == false)
-                                    {
-                                        player.PlayerMoveStart(Direction.Left);
-                                    }
+                                    player.EntityMoveStart(Direction.Up);
+                                    demoRandomDirX = rnd.Next(0, 2);
                                 }
-                                if (tileArray[i, j + 1].type == TileType.Ladder && tileArray[i, j].size.Contains(player.pos))
+                            }
+                            if (tileArray[player.tilePosX + 1, player.tilePosY].type != TileType.Blank)
+                            {
+                                if (keyboardState.IsKeyDown(Keys.Right) && player.isMoving == false && !demoActive)
                                 {
-                                    if (keyboardState.IsKeyDown(Keys.Down) && player.isMoving == false)
-                                    {
-                                        player.PlayerMoveStart(Direction.Down);
-                                    }
+                                    player.EntityMoveStart(Direction.Right);
                                 }
-                                if (tileArray[i, j].type == TileType.Ladder && tileArray[i, j].size.Contains(player.pos))
+                                if (demoActive && player.isMoving == false && demoRandomDir >= 0 && demoRandomDir <2 && demoRandomDirX == 0)
                                 {
-                                    if (keyboardState.IsKeyDown(Keys.Up) && player.isMoving == false)
-                                    {
-                                        player.PlayerMoveStart(Direction.Up);
-                                    }
+                                    player.EntityMoveStart(Direction.Right);
+                                }
+                            }
+                            if (tileArray[player.tilePosX - 1, player.tilePosY].type != TileType.Blank)
+                            {
+                                if (keyboardState.IsKeyDown(Keys.Left) && player.isMoving == false && !demoActive)
+                                {
+                                    player.EntityMoveStart(Direction.Left);
+                                }
+                                if (demoActive && player.isMoving == false && demoRandomDir >= 2 && demoRandomDir < 4 && demoRandomDirX == 1)
+                                {
+                                    player.EntityMoveStart(Direction.Left);
+                                }
+                            }
+                            if (tileArray[player.tilePosX, player.tilePosY + 1].type == TileType.Ladder)
+                            {
+                                if (keyboardState.IsKeyDown(Keys.Down) && player.isMoving == false && !demoActive)
+                                {
+                                    player.EntityMoveStart(Direction.Down);
+                                }
+                                if (demoActive && player.isMoving == false && demoRandomDir == 5)
+                                {
+                                    player.EntityMoveStart(Direction.Down);
                                 }
                             }
                         }
-                    }
 
                     foreach (PointString ps in pointStringList)
                     {
@@ -423,16 +452,13 @@ namespace konkey_kong
                             s.Activated((float)gameTime.ElapsedGameTime.TotalMilliseconds);
                         }
                     }
-                    int excludedLevel = 0;
                     if(switchList.All(s=>s.toggled == true))
                     {
                         for (int j = 0; j < tileArray.GetLength(0); j++)
                         {
                             for (int i = 0; i < tileArray.GetLength(1); i++)
                             {
-                                if (tileArray[i, j].size.Contains(beloved.pos)) { excludedLevel = j; }
-                                    
-                                if( j != excludedLevel) 
+                                if( j != beloved.tilePosY) 
                                 {
                                     if (tileArray[i, j].size.Contains(boss.pos) && !tileArray[i, j].size.Contains(beloved.pos))
                                     {
@@ -446,12 +472,22 @@ namespace konkey_kong
                                         }
                                     }
                                 }
-                                
                             }
                         }
+                        
+                        if( !finalScoreCreated ) 
+                        { 
+                            Vector2 tempPos = boss.pos;
+                            PointString tempPointString = new PointString(2500, tempPos);
+                            pointStringList.Add(tempPointString);
+
+                            score += 2500;
+                            finalScoreCreated = true;
+                        }
+
+                        player.PlayerJump(beloved.pos);
                         boss.isMoving = true;
                         boss.speed = new Vector2(0, 4);
-                        //do the thing
                     }
                     foreach (DummyTile dt in dummyTileList)
                     {
@@ -482,30 +518,25 @@ namespace konkey_kong
                             }
                         }
 
-                            if (!e.isMoving)
+                        if (!e.isMoving)
                         {
                             int enemyMoveRandomizer = rnd.Next(0, 2);
-                            for (int j = 0; j < tileArray.GetLength(0); j++)
+                            if (e.tilePosX < 19 && e.tilePosY < 19 && e.tilePosX > 0)
                             {
-                                for (int i = 0; i < tileArray.GetLength(1); i++)
+                                if (tileArray[e.tilePosX - 1, e.tilePosY].type == TileType.Blank)
                                 {
-                                    if (i < 19 && j < 19 && i > 0)
-                                    {
-                                        if (tileArray[i, j].size.Contains(e.pos) && tileArray[i-1,j].type == TileType.Blank)
-                                        {
-                                            enemyMoveRandomizer = 1;
-                                        }
-                                        else if (tileArray[i, j].size.Contains(e.pos) && tileArray[i + 1, j].type == TileType.Blank)
-                                        {
-                                            enemyMoveRandomizer = 0;
-                                        }
-                                        e.PlayerMoveStart((Direction)enemyMoveRandomizer); 
-                                    }
+                                    enemyMoveRandomizer = 1;
                                 }
-                            }                       
+                                else if (tileArray[e.tilePosX + 1, e.tilePosY].type == TileType.Blank)
+                                {
+                                    enemyMoveRandomizer = 0;
+                                } 
+                                if (tileArray[e.tilePosX + 1, e.tilePosY].type == TileType.Blank && tileArray[e.tilePosX - 1, e.tilePosY].type == TileType.Blank) { } 
+                                else { e.EntityMoveStart((Direction)enemyMoveRandomizer); }
+                            }                     
                         }
                         
-                        e.PlayerMove();
+                        e.EntityMove();
                         e.EnemyAnim(gameTime.ElapsedGameTime.TotalMilliseconds);
                         if (e.duration < 0)
                         {
@@ -519,7 +550,7 @@ namespace konkey_kong
                     boss.KonkeyDrop();
                     boss.PlayerAnim(gameTime.ElapsedGameTime.TotalMilliseconds);
                     beloved.PlayerAnim(gameTime.ElapsedGameTime.TotalMilliseconds);
-                    player.PlayerMove();
+                    player.EntityMove();
                     player.PlayerAnim(gameTime.ElapsedGameTime.TotalMilliseconds);
                         
                     int healthCheck = 0;
@@ -535,53 +566,57 @@ namespace konkey_kong
                     }
                     if (player.size.Intersects(beloved.size))
                     {
-                        gameState = GameState.GameOver;
+                        if (!finalScoreCreated)
+                        {
+                            Vector2 tempPos = beloved.pos;
+                            PointString tempPointString = new PointString(1000, tempPos);
+                            pointStringList.Add(tempPointString);
+
+                            score += 1000;
+                            finalScoreCreated = true;
+                        }
                     }
 
                     break;
                 case GameState.GameOver:
 
-                    if ( !scoreCalculated ) { 
-                        if (score > 0) { 
-                            highscoreList.Add(score.ToString()) ;
-                        }
-                        foreach (string s in highscoreList)
-                        {
-                            sortingHighscoreList.Add(Int32.Parse(s));
-
-                        }
-                        sortingHighscoreList.Sort();
-                        sortingHighscoreList.Reverse();
-
-                        highscoreList.Clear();
-                        if (sortingHighscoreList.Count > 10)
-                        {
-                            for (int j = 0; j < 10; j++)
-                            {
-                                highscoreList.Add(sortingHighscoreList[j].ToString());
+                    if (!demoActive) { 
+                        if ( !scoreCalculated ) { 
+                            if (score > 0) { 
+                                highscoreList.Add(score.ToString()) ;
                             }
-                        }
-                        else
-                        {
-                            foreach (int i in sortingHighscoreList)
+                            foreach (string s in highscoreList)
                             {
+                                sortingHighscoreList.Add(Int32.Parse(s));
 
-                                highscoreList.Add(i.ToString());
                             }
+                            sortingHighscoreList.Sort();
+                            sortingHighscoreList.Reverse();
+
+                            highscoreList.Clear();
+                            if (sortingHighscoreList.Count > 10)
+                            {
+                                for (int j = 0; j < 10; j++)
+                                {
+                                    highscoreList.Add(sortingHighscoreList[j].ToString());
+                                }
+                            }
+                            else
+                            {
+                                foreach (int i in sortingHighscoreList)
+                                {
+
+                                    highscoreList.Add(i.ToString());
+                                }
+                            }
+                            File.WriteAllLines("highscores.txt", highscoreList, Encoding.UTF8);
+                            scoreCalculated = true;
                         }
-                        File.WriteAllLines("highscores.txt", highscoreList, Encoding.UTF8);
-                        scoreCalculated = true;
                     }
-
 
 
                     break;
             }
-
-            // TODO: Add your update logic here
-            
-
-            
 
             base.Update(gameTime);
         }
@@ -590,23 +625,26 @@ namespace konkey_kong
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
-            // TODO: Add your drawing code here
             switch (gameState)
             {
                 case GameState.Title:
                     _spriteBatch.Draw(backgroundTex, new Vector2(0, 0), Color.White);
                     _spriteBatch.Draw(smolButtonTex, new Vector2(300, 450), Color.White);
-                    _spriteBatch.DrawString(font, "Player1", new Vector2(300+25, 450+50), Color.White);
+                    _spriteBatch.Draw(player1IconTex, new Vector2(325, 465), Color.White);
                     _spriteBatch.Draw(smolButtonTex, new Vector2(525, 450), Color.White);
-                    _spriteBatch.DrawString(font, "Player2", new Vector2(475 + 25, 450 + 50), Color.White);
+                    _spriteBatch.Draw(player2IconTex, new Vector2(550, 465), Color.White);
 
                     _spriteBatch.Draw(menuButtonTex, new Vector2(300, 625), Color.White);
                     _spriteBatch.DrawString(font, "High Scores", new Vector2(300 + 50, 625 + 50), Color.White);
+
+                    _spriteBatch.Draw(menuButtonTex, new Vector2(300, 800), Color.White);
+                    _spriteBatch.DrawString(font, "Demo Mode", new Vector2(300 + 50, 800 + 50), Color.White);
                     break;
 
                 case GameState.InGame:
 
                     _spriteBatch.Draw(background2Tex, new Vector2(0,0), Color.White);
+                    
                     foreach (Tile t in tileArray)
                     {
                         t.Draw(_spriteBatch, font);
@@ -646,6 +684,11 @@ namespace konkey_kong
                     beloved.Draw(_spriteBatch);
                     player.Draw(_spriteBatch);
 
+                    if (demoTimer > 1 && demoActive)
+                    {
+                        _spriteBatch.DrawString(font, "DEMO", new Vector2(Window.ClientBounds.Width / 2 - 56, 50), Color.White);
+                    }
+
                     break;
 
                 case GameState.GameOver:
@@ -664,8 +707,6 @@ namespace konkey_kong
                     _spriteBatch.DrawString(font, "High Scores", new Vector2(300 + 50, 825 + 50), Color.White);
                     break;
             }
-
-            
 
             base.Draw(gameTime);
             _spriteBatch.End();

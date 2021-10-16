@@ -31,7 +31,6 @@ namespace konkey_kong
             srcRec.X = frame * 40;
             if (frame == 2) { toggled = true; }
         }
-    
 
         public void Draw(SpriteBatch spritebatch)
         {

@@ -29,7 +29,10 @@ namespace konkey_kong
     public double invulnerableDuration = 0;
     public double speedMult;
 
-    public void Draw(SpriteBatch spritebatch)
+    public int tilePosX;
+    public int tilePosY;
+
+        public void Draw(SpriteBatch spritebatch)
     {
 
         if (invulnerableDuration > 0 && type == EntityType.Player)
@@ -48,14 +51,24 @@ namespace konkey_kong
             pos += speed;
         }
 
-    public void playerJump()
+    public void PlayerJump(Vector2 target)
         {
-            //add to make player go to top of screen, then jump straight up and then fall down on the position of the tile next to beloved
 
+            
+            if ( target.Y+6 <= pos.Y ) { speed.Y = Math.Min(-3, -(pos.Y - target.Y) / 50); }  
+            else if ( target.Y-6 >= pos.Y ) { speed.Y = Math.Max(3, -(pos.Y - target.Y) / 50); } 
+            else { speed.Y = 0; pos.Y = target.Y; }
 
+            if ( target.X - 34 >= pos.X ) { speed.X = (float)Math.Max(1, -(pos.X - target.X) / 100); } 
+            else if ( target.X - 46 <= pos.X ) { speed.X = (float)Math.Min(-1, -(pos.X - target.X) / 100); } 
+            else { speed.X = 0; pos.X = target.X-40; }
 
+            isMoving = false;
+            pos += speed;   
+            
         }
-    public void PlayerMoveStart(Direction direction)
+
+    public void EntityMoveStart(Direction direction)
     {
         if (type == EntityType.Player || state == EntityState.Default)
         {
@@ -92,7 +105,7 @@ namespace konkey_kong
         }
     }
 
-    public void PlayerMove()
+    public void EntityMove()
     {
         if (isMoving)
         {
@@ -113,6 +126,7 @@ namespace konkey_kong
                 pos.Y = oldPos.Y + 50;
                 isMoving = false;
                 speed.Y = 0;
+                tilePosY++;
             }
 
             if (oldPos.Y - 50 >= pos.Y && speed.Y < 0)
@@ -120,13 +134,15 @@ namespace konkey_kong
                 pos.Y = oldPos.Y - 50;
                 isMoving = false;
                 speed.Y = 0;
-            }
+                tilePosY--;
+                }
 
             if (oldPos.X + 50 <= pos.X && speed.X > 0)
             {
                 pos.X = oldPos.X + 50;
                 isMoving = false;
                 speed.X = 0;
+                tilePosX++;
             }
 
             if (oldPos.X - 50 >= pos.X && speed.X < 0)
@@ -134,6 +150,7 @@ namespace konkey_kong
                 pos.X = oldPos.X - 50;
                 isMoving = false;
                 speed.X = 0;
+                tilePosX--;
             }
         }
     }
@@ -164,7 +181,15 @@ namespace konkey_kong
         frameTimer -= time;
         invulnerableDuration -= time;
 
-        
+            if (type == EntityType.Player && !isMoving && speed.Y != 0)
+            {
+                srcRec.Y = 120;
+            }
+
+            if (invulnerableDuration > 0)
+            {
+                srcRec.Y = 200;
+            }
 
         if (frameTimer <= 0 && frame < 6)
         {
@@ -215,6 +240,8 @@ namespace konkey_kong
             frame++;
             if (frame > 4)
             {
+                
+
                 if (state == EntityState.Death)
                 {
                     duration = 0;
@@ -232,7 +259,7 @@ namespace konkey_kong
         srcRec.X = frame * size.Width;
     }
 
-    public Entity(Vector2 pos, Rectangle size, Texture2D tex, bool isMoving, Vector2 speed, EntityType type, double speedMult)
+    public Entity(Vector2 pos, Rectangle size, Texture2D tex, bool isMoving, Vector2 speed, EntityType type, double speedMult, int tilePosX, int tilePosY)
     {
         this.pos = pos;
         this.size = size;
@@ -241,6 +268,8 @@ namespace konkey_kong
         this.speed = speed;
         this.isMoving = isMoving;
         this.speedMult = speedMult;
+        this.tilePosX = tilePosX;
+        this.tilePosY = tilePosY;
     }
 
         public Entity()
