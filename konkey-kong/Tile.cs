@@ -44,8 +44,6 @@ namespace konkey_kong
         public Rectangle size;
         public TileType type;
         public Texture2D tex;
-        public int number1;
-        public int number2;
 
         public void Draw(SpriteBatch spritebatch, SpriteFont font)
         {
@@ -55,15 +53,12 @@ namespace konkey_kong
             //spritebatch.DrawString(font, number2.ToString(), new Vector2(pos.X, pos.Y+12), Color.White);
         }
 
-        public Tile(Vector2 pos, Rectangle size, TileType type, Texture2D tex, int number1, int number2)
+        public Tile(Vector2 pos, Rectangle size, TileType type, Texture2D tex)
         {
             this.pos = pos;
             this.size = size;
             this.type = type;
             this.tex = tex;
-
-            this.number1 = number1;
-            this.number2 = number2;
         }
 
         public Tile()

@@ -13,7 +13,6 @@ namespace konkey_kong
 {
     public class Game1 : Game
     {
-        
 
         public enum GameState { Title = 0, InGame = 1, GameOver = 2}
 
@@ -47,7 +46,7 @@ namespace konkey_kong
         bool demoActive;
         bool finalScoreCreated = false;
         float gameOverTimer = 4;
-        float fireTimer = 5;         //timer to spawn fires
+        float fireTimer = 5;         
 
         const float DEMOTIMER = 2;
         float demoTimer = 2;
@@ -123,8 +122,6 @@ namespace konkey_kong
             switchList = new List<Switch>();
             dummyTileList = new List<DummyTile>();
 
-            //tileArray = new Tile[20, 20];
-
             boss = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), bossTex, false, new Vector2(0, 0), EntityType.KonkeyKong, 1, 0, 0);
             player = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), playerTex, false, new Vector2(0, 0), EntityType.Player, 1, 0, 0);
             beloved = new Entity(new Vector2(5, 0), new Rectangle(5, 0, 40, 40), player2Tex, false, new Vector2(0, 0), EntityType.Beloved, 1, 0, 0);
@@ -175,7 +172,7 @@ namespace konkey_kong
                         Switch switchCreator = new Switch(new Vector2(i * 50 + 5, j * 50 + 5), switchTex, new Rectangle(i * 50 + 5, j * 50 + 5, 40, 40));
                         switchList.Add(switchCreator);
                             
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex);
                     }
 
                     if (strings[j][i] == 'x')
@@ -186,53 +183,53 @@ namespace konkey_kong
                             Pickup pickupCreator = new Pickup(new Vector2(i * 50 + 5, j * 50 + 5), hammerPickupTex, 500, new Rectangle(i * 50 + 5, j * 50 + 5, 40, 40), PickupType.Hammer);
                             pickupList.Add(pickupCreator);
                         }
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex);
                     }
 
                     if (strings[j][i] == 'X')
                     {
                         Pickup pickupCreator = new Pickup(new Vector2(i * 50 + 5, j * 50 + 5), breadTex, 300, new Rectangle(i * 50 + 5, j * 50 + 5, 40, 40), PickupType.Points);
                         pickupList.Add(pickupCreator);
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex);
                     }
 
                     if (strings[j][i] == 'l')
                     {
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Ladder, ladderTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Ladder, ladderTex);
                     }
 
                     if (strings[j][i] == 'L')
                     {
                         Pickup pickupCreator = new Pickup(new Vector2(i * 50 + 5, j * 50 + 5), breadTex, 300, new Rectangle(i * 50 + 5, j * 50 + 5, 40, 40), PickupType.Points);
                         pickupList.Add(pickupCreator);
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Ladder, ladderTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Ladder, ladderTex);
                     }
 
                     if (strings[j][i] == 'o')
                     {
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, blankTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, blankTex);
                     }
 
                     if (strings[j][i] == 'd')
                     {
                         boss.pos = new Vector2(i * 50 + 5, j * 50);
                         boss.size = new Rectangle(i * 50 + 5, j * 50, 40, 40);
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex);
                     }
 
                     if (strings[j][i] == '<')
                     {
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, tileCapLTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, tileCapLTex);
                     }
 
                     if (strings[j][i] == '>')
                     {
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, tileCapRTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, tileCapRTex);
                     }
 
                     if (strings[j][i] == 'b')
                     {
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, tileCapBothTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Blank, tileCapBothTex);
                     }
 
                     if (strings[j][i] == 'p')
@@ -241,7 +238,7 @@ namespace konkey_kong
                         player.size = new Rectangle(i * 50 + 5, j * 50, 40, 40);
                         player.tilePosX = i;
                         player.tilePosY = j;
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex);
                     }
 
                     if (strings[j][i] == 'g')
@@ -250,7 +247,7 @@ namespace konkey_kong
                         beloved.size = new Rectangle(i * 50 + 5, j * 50, 40, 40);
                         beloved.tilePosX = i;
                         beloved.tilePosY = j;
-                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex, i, j);
+                        tileArray[i, j] = new Tile(tempPos, tempRect, TileType.Standard, tileTex);
                     }
                 }
             }
@@ -262,9 +259,9 @@ namespace konkey_kong
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
             mousePos = new Vector2(mouseState.Position.X, mouseState.Position.Y);
-            var keyboardState = Keyboard.GetState();
 
             switch (gameState)
             {
@@ -452,6 +449,7 @@ namespace konkey_kong
                             s.Activated((float)gameTime.ElapsedGameTime.TotalMilliseconds);
                         }
                     }
+
                     if(switchList.All(s=>s.toggled == true))
                     {
                         for (int j = 0; j < tileArray.GetLength(0); j++)
