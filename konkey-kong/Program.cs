@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace konkey_kong
+namespace pakeman
 {
     public static class Program
     {
