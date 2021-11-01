@@ -9,8 +9,9 @@ using System.IO;
 
 namespace pakeman
 {
-    public enum Direction { Left = 0, Right = 1, Up = 2, Down = 3, None = 4 }
-    public enum EntityState { Default = 0, Scared = 1 }
+    public enum Direction { Left = 0, Right = 1, Up = 2, Down = 3, None = 4 } 
+    public enum EntityState { Default = 0, Scared = 1, Death = 2, PowerupGhost = 3, PowerupWall = 4 }
+    
     public class Entity : BaseObject
 {
     protected Vector2 oldPos;
@@ -50,6 +51,10 @@ namespace pakeman
         {
             Vector2 adjustedPos = new Vector2(pos.X + 16, pos.Y + 16);
             spritebatch.Draw(tex, adjustedPos, srcRec, Color.White, rotation, new Vector2(16,16), 1, SpriteFx, 1);
+            if(state == EntityState.Scared)
+            {
+                spritebatch.Draw(tex, adjustedPos, srcRec, Color.Blue, rotation, new Vector2(16, 16), 1, SpriteFx, 1);
+            }
         }
         public void NeighborTiles(Tile tLeft, Tile tRight, Tile tUp, Tile tDown, Tile tFarLeft, Tile tFarRight, Tile tFarUp, Tile tFarDown, Tile tLeftUp, Tile tRightUp, Tile tLeftDown, Tile tRightDown)
         {
@@ -96,13 +101,13 @@ namespace pakeman
             }
         }
 
-    public void EntityMoveStart(Direction direction, bool useFar)
+    public void EntityMoveStart(Direction direction)
     {
             
             switch (direction)
             {
                 case Direction.Left:
-                    if(tLeft.type == TileType.Standard && !useFar) 
+                    if(tLeft.type == TileType.Standard || state == EntityState.PowerupWall) 
                     { 
                         speed.X = -2;
                         isMoving = true;
@@ -112,7 +117,7 @@ namespace pakeman
 
                     break;
                 case Direction.Right:
-                    if (tRight.type == TileType.Standard && !useFar)
+                    if (tRight.type == TileType.Standard || state == EntityState.PowerupWall)
                     {
                         speed.X = 2;
                         isMoving = true;
@@ -122,7 +127,7 @@ namespace pakeman
 
                     break;
                 case Direction.Down:
-                    if (tDown.type == TileType.Standard && !useFar)
+                    if (tDown.type == TileType.Standard || state == EntityState.PowerupWall)
                     {
                         speed.Y = 2;
                         isMoving = true;
@@ -132,7 +137,7 @@ namespace pakeman
 
                     break;
                 case Direction.Up:
-                    if (tUp.type == TileType.Standard && !useFar)
+                    if (tUp.type == TileType.Standard || state == EntityState.PowerupWall)
                     {
                         speed.Y = -2;
                         isMoving = true;
@@ -162,7 +167,7 @@ namespace pakeman
             tilePosX = targetGate.posX;
             tilePosY = targetGate.posY;
 
-            EntityMoveStart(tempDir, false);
+            EntityMoveStart(tempDir);
         }
     public void EntityMove()
     {
@@ -183,7 +188,7 @@ namespace pakeman
                 if (queuedDirection == Direction.None) 
                     {
                         UpdateNeighborTiles(dir);
-                        EntityMoveStart(dir, false); 
+                        EntityMoveStart(dir); 
                     }
             }
 
@@ -196,7 +201,7 @@ namespace pakeman
                 if (queuedDirection == Direction.None)
                     {
                         UpdateNeighborTiles(dir);
-                        EntityMoveStart(dir, false);
+                        EntityMoveStart(dir);
                     }
                 }
 
@@ -209,7 +214,7 @@ namespace pakeman
                 if (queuedDirection == Direction.None)
                     {
                         UpdateNeighborTiles(dir);
-                        EntityMoveStart(dir, false);
+                        EntityMoveStart(dir);
                     }
                 }
 
@@ -222,7 +227,7 @@ namespace pakeman
                 if (queuedDirection == Direction.None)
                     {
                         UpdateNeighborTiles(dir);
-                        EntityMoveStart(dir, false);
+                        EntityMoveStart(dir);
                     }
                 }
 
@@ -232,25 +237,25 @@ namespace pakeman
                     {
                         case Direction.Left:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection, false);
+                            EntityMoveStart(queuedDirection);
 
                             break;
 
                         case Direction.Up:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection, false);
+                            EntityMoveStart(queuedDirection);
 
                             break;
 
                         case Direction.Right:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection, false);
+                            EntityMoveStart(queuedDirection);
 
                             break;
 
                         case Direction.Down:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection, false);
+                            EntityMoveStart(queuedDirection);
 
                             break;
                     }
@@ -273,46 +278,66 @@ namespace pakeman
 
     public class Player : Entity
     {
-
+        public int health = 3;
         private bool reverseAnim = false;
         public int usedGate;
         public Tile respawnTile;
         private Texture2D aliveTex;
         private Texture2D deathTex;
+        public double PowerupDuration;
 
         public Player(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, Texture2D aliveTex, Texture2D deathTex) : base(pos, size, tex, tileX, tileY) {
             this.aliveTex = aliveTex;
             this.deathTex = deathTex;
             }
+        public void Update(double time)
+        {
+            if(state == EntityState.PowerupWall ||state == EntityState.PowerupGhost)
+            {
+                PowerupTimer(time);
+            }
+            EntityMove();
+            Input();
+            Anim(time);
+
+        }
+        public void PowerupTimer(double time)
+        {
+            PowerupDuration -= time;
+            if (PowerupDuration < 0)
+            {
+                state = EntityState.Default;
+            }
+        }
 
         public void Input()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
                 if(isMoving) { queuedDirection = Direction.Up; } 
-                else { EntityMoveStart(Direction.Up, false); }
+                else { EntityMoveStart(Direction.Up); }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 if (isMoving) { queuedDirection = Direction.Right; }
-                else { EntityMoveStart(Direction.Right, false); }
+                else { EntityMoveStart(Direction.Right); }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
                 if (isMoving) { queuedDirection = Direction.Left; }
-                else { EntityMoveStart(Direction.Left, false); }
+                else { EntityMoveStart(Direction.Left); }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
                 if (isMoving) { queuedDirection = Direction.Down; }
-                else { EntityMoveStart(Direction.Down, false); }
+                else { EntityMoveStart(Direction.Down); }
             }
         }
 
         public void Anim(double time)
         {
             frameTimer -= time;
-            if (state == EntityState.Default) { 
+            if (state != EntityState.Death) { 
                 if (frameTimer <= 0 && frame < 3 && reverseAnim == false)
                 {
                     frameTimer = 56;
@@ -348,7 +373,7 @@ namespace pakeman
                     rotation = MathHelper.ToRadians(90);
                 }
             }
-            if (state == EntityState.Scared)
+            if (state == EntityState.Death)
             {
                 if (frameTimer <= 0)
                 {
@@ -362,9 +387,9 @@ namespace pakeman
 
         public void Death()
         {
-            if(state != EntityState.Scared) { 
+            if(state != EntityState.Death) { 
             tex = deathTex;
-            state = EntityState.Scared;
+            state = EntityState.Death;
             speed = new Vector2(0, 0);
             frame = 0;
             }
@@ -380,6 +405,8 @@ namespace pakeman
             frame = 0;
             isMoving = false;
         }
+
+
     }
     public class Enemy : Entity
     {
@@ -402,12 +429,22 @@ namespace pakeman
             }
             srcRec.X = frame * size.Width;
         }
+        public void WhenScared(int pacPosX, int pacPosY)
+        {
+            if( state == EntityState.Scared )
+            {
+                
+
+
+            }
+
+        }
         public void ArtificialIntelligence()
         {
             Random rnd = new Random();
             if (!isMoving) {
                 chosenDir = (Direction)rnd.Next(0, 4);
-                EntityMoveStart(chosenDir, false);
+                EntityMoveStart(chosenDir);
             }
 
         }

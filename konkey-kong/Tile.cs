@@ -9,7 +9,7 @@ using System.IO;
 
 namespace pakeman
 {
-    public enum TileType { Standard = 0, Wall = 1, Gate = 2 }
+    public enum TileType { Standard = 0, Wall = 1, Gate = 2, GhostSpawn = 3, PowerUpSpawn = 4, PacmanSpawn = 5 }
     public class Tile : BaseObject
     {
         public TileType type;

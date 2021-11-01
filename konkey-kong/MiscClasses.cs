@@ -9,14 +9,15 @@ using System.IO;
 
 namespace pakeman
 {
-    public enum PickupType {Points = 0, Powerup = 1}
+    public enum PickupType {Points = 0, PowerupEatWall = 1, PowerupEatGhost = 2}
 
     public class Pickup : BaseObject
     {
         public int value = 10;
+        public PickupType type = PickupType.Points;
         protected Rectangle srcRec = new Rectangle(0, 0, 8, 8);
 
-        public void Draw(SpriteBatch spriteBatch, double time)
+        public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(tex, pos, srcRec, Color.White);
         }
@@ -46,11 +47,48 @@ namespace pakeman
 
     public class Powerup : Pickup
     {
-        public Powerup(Vector2 pos, Texture2D tex, Rectangle size) : base(pos, tex, size)
+        private double frameTimer = 56;
+        private int frame = 0;
+        public void Anim(double time)
+        {
+            srcRec.Width = 32;
+            srcRec.Height = 32;
+            frameTimer -= time;
+                if (frameTimer <= 0 && frame < 8) 
+                {
+                    frameTimer = 56;
+                    frame++;
+                    if (frame > 7) { frame = 0; }
+                }
+            srcRec.X = frame * size.Width;
+        }
+        public Powerup(Vector2 pos, Texture2D tex, Rectangle size, PickupType type) : base(pos, tex, size)
         {
             this.pos = pos;
             this.tex = tex;
             this.size = size;
+            this.type = type;
+        }
+    }
+
+    public class Button : BaseObject
+    {
+        public Button(Vector2 pos, Texture2D tex, Rectangle size) : base(pos, tex, size)
+        {
+            this.pos = pos;
+            this.tex = tex;
+            this.size = size;
+        }
+
+        public void Draw(SpriteBatch spriteBatch, SpriteFont spriteFont, string printedString)
+        {
+            Vector2 adjustedPos = pos;
+            
+            adjustedPos.Y = pos.Y + (size.Height /2 ) - spriteFont.MeasureString(printedString).Y / 2;
+            adjustedPos.X = pos.X + (size.Width / 2) - spriteFont.MeasureString(printedString).X / 2;
+
+            spriteBatch.Draw(tex, pos, Color.White);
+            spriteBatch.DrawString(spriteFont, printedString, adjustedPos, Color.White);
         }
     }
 
@@ -93,7 +131,7 @@ namespace pakeman
         public int value;
         public Vector2 pos;
         private Vector2 speed = new Vector2(0, -1);
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Vector2 pos, double time)
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font)
         {
             spriteBatch.DrawString(font, ($"+{value}"), pos, Color.White);
         }
