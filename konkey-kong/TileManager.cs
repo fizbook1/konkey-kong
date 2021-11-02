@@ -155,58 +155,51 @@ namespace pakeman
                 gateTimer = GATETIMER;
             }
         }
-        public void LevelEdit()
+        public void LevelEdit(char button)
         {
-
             var mouse = Mouse.GetState();
-            bool mouseLReady = true;
-            bool mouseRReady = true;
-            if (mouse.LeftButton == ButtonState.Released)
-            {
-                mouseLReady = true;
-            }
-            if (mouse.RightButton == ButtonState.Released)
-            {
-                mouseRReady = true;
-            }
 
             foreach (Tile t in currentMap)
             {
-                if(mouse.LeftButton == ButtonState.Pressed && mouseLReady && t.size.Contains(mouse.Position))
+                if(button == 'l' && t.size.Contains(mouse.Position))
                 {
-                    if (t.type == TileType.Wall)
+                    switch (t.type)
                     {
-                        t.type = TileType.Standard;
-                        t.tex = textures.blank;
-                    }
-                    if (t.type != TileType.Wall)
-                    {
-                        t.type = TileType.Wall;
-                        t.tex = textures.wallSheet;
+                        case TileType.Wall:
+                            t.type = TileType.Standard;
+                            t.tex = textures.blank;
+                            break;
+                        case TileType.Standard:
+                            t.type = TileType.Wall;
+                            t.tex = textures.wallSheet;
+                            break;
                     }
                 }
-                if (mouse.RightButton == ButtonState.Pressed && mouseRReady && t.size.Contains(mouse.Position))
+                if (button == 'r' && t.size.Contains(mouse.Position))
                 {
-                    if (t.type == TileType.Standard)
+                    switch (t.type)
                     {
-                        t.type = TileType.PowerUpSpawn;
-                        t.tex = textures.blank;
+                        case TileType.Standard:
+                            t.type = TileType.PowerUpSpawn;
+                            t.tex = textures.blank;
+                            break;
+
+                        case TileType.PowerUpSpawn:
+                            t.type = TileType.PacmanSpawn;
+                            t.tex = textures.blank;
+                        break;
+
+                        case TileType.PacmanSpawn:
+                            t.type = TileType.GhostSpawn;
+                            t.tex = textures.blank;
+                        break;
+
+                        case TileType.GhostSpawn:
+                            t.type = TileType.Standard;
+                            t.tex = textures.blank;
+                        break;
                     }
-                    if (t.type == TileType.PowerUpSpawn)
-                    {
-                        t.type = TileType.PacmanSpawn;
-                        t.tex = textures.blank;
-                    }
-                    if (t.type == TileType.PacmanSpawn)
-                    {
-                        t.type = TileType.GhostSpawn;
-                        t.tex = textures.blank;
-                    }
-                    if (t.type == TileType.GhostSpawn)
-                    {
-                        t.type = TileType.Standard;
-                        t.tex = textures.blank;
-                    }
+
                 }
 
             }
@@ -214,11 +207,29 @@ namespace pakeman
 
 
         }
-        public void UpdateDraw(SpriteBatch spriteBatch)
+        public void UpdateDraw(SpriteBatch spriteBatch, GameState gameState)
         {
             foreach (Tile t in currentMap)
             {
                 t.Draw(spriteBatch);
+            }
+            if(gameState == GameState.LevelEditor)
+            {
+                foreach (Tile t in currentMap)
+                {
+                    if(t.type == (TileType.PowerUpSpawn))
+                    {
+                        spriteBatch.Draw(textures.powerupGhost, t.pos, new Rectangle(0,0,32,32), Color.White);
+                    }
+                    if (t.type == (TileType.GhostSpawn))
+                    {
+                        spriteBatch.Draw(textures.ghost, t.pos, new Rectangle(0, 0, 32, 32), Color.White);
+                    }
+                    if (t.type == (TileType.PacmanSpawn))
+                    {
+                        spriteBatch.Draw(textures.pakeman, t.pos, new Rectangle(0, 0, 32, 32), Color.White);
+                    }
+                }
             }
         }
     }

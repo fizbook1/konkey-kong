@@ -46,10 +46,13 @@ namespace pakeman
 
         Button nextLevelButton; 
         Button exitButton;
+        Button backButton;
 
         private SpriteFont font;
         private SpriteFont bigFont;
         Vector2 mousePos;
+        bool mouseLReady = false;
+        bool mouseRReady = false;
 
         bool finalScoreCreated = false;
 
@@ -103,6 +106,7 @@ namespace pakeman
 
             nextLevelButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128));
             exitButton = new Button(new Vector2(220, 535), textureManager.button, new Rectangle(220, 535, 520, 128));
+            backButton = new Button(new Vector2(40, 635), textureManager.button, new Rectangle(40, 635, 520, 128));
 
             healthBarList = new List<HealthBar>();
 
@@ -182,6 +186,17 @@ namespace pakeman
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
 
+            
+            if (mouseState.LeftButton == ButtonState.Released)
+            {
+                mouseLReady = true;
+            }
+            if (mouseState.RightButton == ButtonState.Released)
+            {
+                mouseRReady = true;
+            }
+            
+
             mousePos = new Vector2(mouseState.Position.X, mouseState.Position.Y);
 
             switch (gameState)
@@ -240,7 +255,7 @@ namespace pakeman
                     break;
                 case GameState.Menu:
 
-                    if (startButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
+                    if (nextLevelButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
                     {
                         currentMap++;
                         tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
@@ -248,7 +263,7 @@ namespace pakeman
                         gameState = GameState.InGame;
                     }
 
-                    if (levelButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
+                    if (exitButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
                     {
                         gameState = GameState.GameOver;
                     }
@@ -288,8 +303,22 @@ namespace pakeman
                 break;
 
                 case GameState.LevelEditor:
+                    if (mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
+                    {
+                        mouseLReady = false;
+                        tileManager.LevelEdit('l');
+                    }
+                    if (mouseState.RightButton == ButtonState.Pressed && mouseRReady)
+                    {
+                        mouseRReady = false;
+                        tileManager.LevelEdit('r');
+                    }
+                    
+                    if(backButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        gameState = GameState.Title;
+                    }
 
-                    tileManager.LevelEdit();
                     tileManager.Update(0, gameState);
 
 
@@ -317,7 +346,7 @@ namespace pakeman
                 case GameState.InGame:
 
 
-                    tileManager.UpdateDraw(_spriteBatch);
+                    tileManager.UpdateDraw(_spriteBatch, gameState);
                     pickupManager.UpdateDraw(_spriteBatch);
                     enemyManager.UpdateDraw(_spriteBatch);
                     scoreManager.UpdateDraw(_spriteBatch, font);
@@ -363,7 +392,8 @@ namespace pakeman
 
                 case GameState.LevelEditor:
 
-                    tileManager.UpdateDraw(_spriteBatch);
+                    tileManager.UpdateDraw(_spriteBatch, gameState);
+                    backButton.Draw(_spriteBatch, bigFont, "Back");
 
                     break;
             }
