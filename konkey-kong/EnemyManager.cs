@@ -11,17 +11,23 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace pakeman
 {
-    class EnemyManager
+    public class EnemyManager
     {
+        TextureManager textures;
         public List<Enemy> enemies = new List<Enemy>();
 
-        public void Update(double time, Player player, ScoreManager score)
+        public EnemyManager(TextureManager textures)
+        {
+            this.textures = textures;
+        }
+        public void Update(double time, Player player, ScoreManager score, TileManager tiles)
         {
             foreach (Enemy e in enemies)
             {
+                e.NeighborTiles(tiles.NeighborTiles(e.tilePosX, e.tilePosY));
                 e.EntityMove();
                 e.WhenScared(player.tilePosX, player.tilePosY);
-                e.ArtificialIntelligence();
+                e.ArtificialIntelligence(player);
                 e.Anim(time);
 
                 Collision(e, player, score);
@@ -37,17 +43,19 @@ namespace pakeman
         }
         private void Collision(Enemy e, Player p, ScoreManager score)
         {
-            if(e.size.Intersects(p.size) && e.state == EntityState.Default && p.state != EntityState.PowerupGhost)
+            if(e.size.Intersects(p.size) && e.state == EntityState.Default && p.state != EntityState.PowerupGhost && p.state != EntityState.Death)
             {
                 p.Death();
-                p.health--;
-
             }
             else if (e.size.Intersects(p.size) && e.state != EntityState.Death && p.state == EntityState.PowerupGhost)
             {
-                e.state = EntityState.Death;
+                e.Death();
                 score.Increment(200, e.pos);
             }
+        }
+        public void Reset()
+        {
+            enemies.Clear();
         }
 
     }

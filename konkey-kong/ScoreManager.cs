@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace pakeman
 {
-    class ScoreManager
+    public class ScoreManager
     {
         public int score = 0;
         public List<PointString> list = new List<PointString>();

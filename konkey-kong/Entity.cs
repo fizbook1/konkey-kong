@@ -24,6 +24,7 @@ namespace pakeman
     public EntityState state = EntityState.Default;
     public Direction dir;
 
+    public Tile respawnTile;
     public Direction queuedDirection;
 
     protected SpriteEffects SpriteFx;
@@ -56,22 +57,22 @@ namespace pakeman
                 spritebatch.Draw(tex, adjustedPos, srcRec, Color.Blue, rotation, new Vector2(16, 16), 1, SpriteFx, 1);
             }
         }
-        public void NeighborTiles(Tile tLeft, Tile tRight, Tile tUp, Tile tDown, Tile tFarLeft, Tile tFarRight, Tile tFarUp, Tile tFarDown, Tile tLeftUp, Tile tRightUp, Tile tLeftDown, Tile tRightDown)
+        public void NeighborTiles(Tile[] tiles)
         {
-            this.tLeft = tLeft;
-            this.tRight = tRight;
-            this.tUp = tUp;
-            this.tDown = tDown;
+            this.tLeft = tiles[0];
+            this.tRight = tiles[1];
+            this.tUp = tiles[2];
+            this.tDown = tiles[3];
 
-            this.tFarLeft = tFarLeft;
-            this.tFarRight = tFarRight;
-            this.tFarUp = tFarUp;
-            this.tFarDown = tFarDown;
+            this.tFarLeft = tiles[4];
+            this.tFarRight = tiles[5];
+            this.tFarUp = tiles[6];
+            this.tFarDown = tiles[7];
 
-            this.tLeftUp = tLeftUp;
-            this.tRightUp = tRightUp;
-            this.tLeftDown = tLeftDown;
-            this.tRightDown = tRightDown;
+            this.tLeftUp = tiles[8];
+            this.tRightUp = tiles[9];
+            this.tLeftDown = tiles[10];
+            this.tRightDown = tiles[11];
         }
 
         protected void UpdateNeighborTiles(Direction dir)
@@ -103,11 +104,10 @@ namespace pakeman
 
     public void EntityMoveStart(Direction direction)
     {
-            
             switch (direction)
             {
                 case Direction.Left:
-                    if(tLeft.type == TileType.Standard || state == EntityState.PowerupWall) 
+                    if(tLeft.type == TileType.Standard || state == EntityState.PowerupWall && tLeft.posX > 1) 
                     { 
                         speed.X = -2;
                         isMoving = true;
@@ -117,7 +117,7 @@ namespace pakeman
 
                     break;
                 case Direction.Right:
-                    if (tRight.type == TileType.Standard || state == EntityState.PowerupWall)
+                    if (tRight.type == TileType.Standard || state == EntityState.PowerupWall && tRight.posX < 35)
                     {
                         speed.X = 2;
                         isMoving = true;
@@ -127,7 +127,7 @@ namespace pakeman
 
                     break;
                 case Direction.Down:
-                    if (tDown.type == TileType.Standard || state == EntityState.PowerupWall)
+                    if (tDown.type == TileType.Standard || state == EntityState.PowerupWall && tDown.posY < 25)
                     {
                         speed.Y = 2;
                         isMoving = true;
@@ -137,7 +137,7 @@ namespace pakeman
 
                     break;
                 case Direction.Up:
-                    if (tUp.type == TileType.Standard || state == EntityState.PowerupWall)
+                    if (tUp.type == TileType.Standard || state == EntityState.PowerupWall && tUp.posY > 1)
                     {
                         speed.Y = -2;
                         isMoving = true;
@@ -153,16 +153,9 @@ namespace pakeman
             
     }
 
-    public void GateMove(Tile targetGate)
+    public void GateMove(Tile targetGate, Direction tempDir)
         {
-            Direction tempDir = Direction.None;
-            if (pos.X < targetGate.posX)
-            {
-                tempDir = Direction.Left;
-            } else if (pos.X > targetGate.posX)
-            {
-                tempDir = Direction.Right;
-            }
+
             pos = targetGate.pos;
             tilePosX = targetGate.posX;
             tilePosY = targetGate.posY;
@@ -278,21 +271,19 @@ namespace pakeman
 
     public class Player : Entity
     {
+        TextureManager textures;
         public int health = 3;
         private bool reverseAnim = false;
         public int usedGate;
-        public Tile respawnTile;
-        private Texture2D aliveTex;
-        private Texture2D deathTex;
         public double PowerupDuration;
 
-        public Player(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, Texture2D aliveTex, Texture2D deathTex) : base(pos, size, tex, tileX, tileY) {
-            this.aliveTex = aliveTex;
-            this.deathTex = deathTex;
+        public Player(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, TextureManager textures) : base(pos, size, tex, tileX, tileY) {
+            this.textures = textures;
             }
-        public void Update(double time)
+        public void Update(double time, TileManager tiles)
         {
-            if(state == EntityState.PowerupWall ||state == EntityState.PowerupGhost)
+            NeighborTiles(tiles.NeighborTiles(tilePosX, tilePosY));
+            if(state == EntityState.PowerupWall || state == EntityState.PowerupGhost)
             {
                 PowerupTimer(time);
             }
@@ -387,23 +378,23 @@ namespace pakeman
 
         public void Death()
         {
-            if(state != EntityState.Death) { 
-            tex = deathTex;
             state = EntityState.Death;
+            tex = textures.pakemandeath;
             speed = new Vector2(0, 0);
             frame = 0;
-            }
-
         }
         public void Respawn()
         {
-            tex = aliveTex;
+            tex = textures.pakeman;
             pos = respawnTile.pos;
+            size.X = (int)pos.X;
+            size.Y = (int)pos.Y;
             tilePosX = respawnTile.posX;
             tilePosY = respawnTile.posY;
             state = EntityState.Default;
             frame = 0;
             isMoving = false;
+            health--;
         }
 
 
@@ -420,13 +411,25 @@ namespace pakeman
         public void Anim(double time)
         {
             frameTimer -= time;
-
-            if (frameTimer <= 0 && frame < 3)
-            {
-                frameTimer = 56;
-                frame++;
-                if (frame > 2) { frame = 0; }
+            if(state != EntityState.Death) { 
+                if (frameTimer <= 0 && frame < 3)
+                {
+                    frameTimer = 56;
+                    frame++;
+                    if (frame > 2) { frame = 0; }
+                }
             }
+
+            if (state == EntityState.Death)
+            {
+                if (frameTimer <= 0 && frame < 30)
+                {
+                    frameTimer = 56;
+                    frame++;
+                    if (frame > 28) { Respawn(); }
+                }
+            }
+
             srcRec.X = frame * size.Width;
         }
         public void WhenScared(int pacPosX, int pacPosY)
@@ -437,18 +440,203 @@ namespace pakeman
 
 
             }
-
         }
-        public void ArtificialIntelligence()
+
+        public void Death()
+        {
+            if (state != EntityState.Death)
+            {
+                state = EntityState.Death;
+                speed = new Vector2(0, 0);
+                frame = 0;
+            }
+        }
+        public void Respawn()
+        {
+            pos = respawnTile.pos;
+            tilePosX = respawnTile.posX;
+            tilePosY = respawnTile.posY;
+            state = EntityState.Default;
+            frame = 0;
+            isMoving = false;
+        }
+        public void ArtificialIntelligence(Player player)
         {
             Random rnd = new Random();
-            if (!isMoving) {
-                chosenDir = (Direction)rnd.Next(0, 4);
-                EntityMoveStart(chosenDir);
+            Direction chosenDir2;
+            if (type == 0) { 
+                if (!isMoving)
+                {
+                    chosenDir = (Direction)rnd.Next(0, 4);
+                    EntityMoveStart(chosenDir);
+                }
             }
+            if (type == 1)
+            {
+                chosenDir2 = (Direction)rnd.Next(0, 4);
+                if (!isMoving)
+                {
+                    chosenDir = (Direction)rnd.Next(0, 4);
+                    EntityMoveStart(chosenDir);
+                }
+                queuedDirection = chosenDir2;
 
+            }
+            if (type == 2)
+            {
+                
+                int differenceX;
+                int differenceY;
+
+                differenceX = player.tilePosX - tilePosX;
+                differenceY = player.tilePosY - tilePosY;
+
+                if (Math.Abs(differenceX) > Math.Abs(differenceY))
+                {
+                    if( differenceX < 0)
+                    {
+                        if(tLeft.type == TileType.Standard)
+                        {
+                            if(!isMoving) { EntityMoveStart(Direction.Left); }
+                            else { queuedDirection = Direction.Left; }
+                            
+                        } 
+                        else
+                        {
+                            if (differenceY < 0 && tUp.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Up); }
+                                else { queuedDirection = Direction.Up; }
+                            }
+                            if (differenceY > 0 && tDown.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Down); }
+                                else { queuedDirection = Direction.Down; }
+                            }
+                        }
+                    }
+                    if ( differenceX > 0)
+                    {
+                        if (tRight.type == TileType.Standard)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Right); }
+                            else { queuedDirection = Direction.Right; }
+                        }
+                        else
+                        {
+                            if (differenceY < 0 && tUp.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Up); }
+                                else { queuedDirection = Direction.Up; }
+                            }
+                            if (differenceY > 0 && tDown.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Down); }
+                                else { queuedDirection = Direction.Down; }
+                            }
+                        }
+                    }
+                }
+                if (Math.Abs(differenceY) > Math.Abs(differenceX))
+                {
+                    if (differenceY < 0)
+                    {
+                        if (tUp.type == TileType.Standard)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Up); }
+                            else { queuedDirection = Direction.Up; }
+                        }
+                        else
+                        {
+                            if (differenceX < 0)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Left); }
+                                else { queuedDirection = Direction.Left; }
+                            }
+                            if (differenceX > 0)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Right); }
+                                else { queuedDirection = Direction.Right; }
+                            }
+                        }
+                        //move up
+                    }
+                    if (differenceY > 0)
+                    {
+                        if (tDown.type == TileType.Standard)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Down); }
+                            else { queuedDirection = Direction.Down; }
+                        }
+                        else
+                        {
+                            if (differenceX < 0)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Left); }
+                                else { queuedDirection = Direction.Left; }
+                            }
+                            if (differenceX > 0)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Right); }
+                                else { queuedDirection = Direction.Right; }
+                            }
+                        }   
+                        //move down
+                    }
+                }
+                
+
+
+
+
+                /*if (player.tilePosX < tilePosX)
+                {
+                    if (tRight.type != TileType.Wall)
+                    {
+                        queuedDirection = Direction.Right;
+                    } else if (player.tilePosY < tilePosY)
+                    {
+                        queuedDirection = Direction.Down;
+                    } else
+                    {
+                        queuedDirection = Direction.Up;
+                    }
+                }
+                else
+                {
+                    if (tLeft.type != TileType.Wall)
+                    {
+                        queuedDirection = Direction.Left;
+                    }
+                    else if (player.tilePosY < tilePosY)
+                    {
+                        queuedDirection = Direction.Down;
+                    }
+                    else
+                    {
+                        queuedDirection = Direction.Up;
+                    }
+                }*/
+            }
         }
 
-
     }
+    
+    //public class EnemyWall : Enemy
+    //{
+    //    public EnemyWall(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, int type) : base(pos, size, tex, tileX, tileY, type)
+    //    {
+    //    }
+    //    new public void ArtificialIntelligence()
+    //    {
+    //        Random rnd = new Random();
+    //        if (!isMoving)
+    //        {
+    //            chosenDir = (Direction)rnd.Next(0, 4);
+    //            EntityMoveStart(chosenDir);
+    //        }
+
+    //    }
+
+    //}
 }

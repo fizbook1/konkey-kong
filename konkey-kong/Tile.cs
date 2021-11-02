@@ -214,7 +214,7 @@ namespace pakeman
             //srcrec.X = 64; srcrec.Y = 128;
         }
 
-        public void Draw(SpriteBatch spritebatch, SpriteFont font)
+        public void Draw(SpriteBatch spritebatch/* SpriteFont font*/)
         {
             Vector2 adjustedPos = new Vector2(pos.X + 16, pos.Y + 16);
             spritebatch.Draw(tex, adjustedPos, srcrec, Color.White, rotation, new Vector2(16, 16), 1, SpriteFx, 1);
