@@ -73,14 +73,16 @@ namespace pakeman
 
     public class Button : BaseObject
     {
-        public Button(Vector2 pos, Texture2D tex, Rectangle size) : base(pos, tex, size)
+        string printedString;
+        public Button(Vector2 pos, Texture2D tex, Rectangle size, string printedString) : base(pos, tex, size)
         {
             this.pos = pos;
             this.tex = tex;
             this.size = size;
+            this.printedString = printedString;
         }
 
-        public void Draw(SpriteBatch spriteBatch, SpriteFont spriteFont, string printedString)
+        public void Draw(SpriteBatch spriteBatch, SpriteFont spriteFont)
         {
             Vector2 adjustedPos = pos;
             

@@ -10,23 +10,20 @@ using System.Text;
 using Microsoft.Xna.Framework.Audio;
 
 namespace pakeman
-{   
-    
+{
+
     public class Game1 : Game
     {
         Random rnd = new Random();
         const int TILESIZE = 32;
 
-        public enum GameState { Title = 0, InGame = 1, GameOver = 2, Menu = 3, LevelEditor = 4}
+        public enum GameState { Title = 0, InGame = 1, GameOver = 2, Menu = 3, LevelEditor = 4 }
 
         GameState gameState = GameState.Title;
 
         SoundEffect pickupFX;
 
         List<Tile[,]> mapList;
-        Tile[,] tileArr1 = new Tile[36, 27];
-        Tile[,] tileArr2 = new Tile[36, 27];
-        Tile[,] tileArr3 = new Tile[36, 27];
 
         Color bgcolor = new Color(13, 4, 25);
 
@@ -44,9 +41,16 @@ namespace pakeman
         Button levelButton;
         Button editorButton;
 
-        Button nextLevelButton; 
+        Button nextLevelButton;
         Button exitButton;
+
         Button backButton;
+        Rectangle editorNullZone;
+        int currentlyEditedMap = 1;
+        Button map1Button;
+        Button map2Button;
+        Button map3Button;
+
 
         private SpriteFont font;
         private SpriteFont bigFont;
@@ -98,15 +102,20 @@ namespace pakeman
             pickupManager = new PickupManager(textureManager);
             scoreManager = new ScoreManager();
             enemyManager = new EnemyManager(textureManager);
-            
 
-            startButton = new Button(new Vector2(220, 205), textureManager.button, new Rectangle(220, 205, 520, 128));
-            levelButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128));
-            editorButton = new Button(new Vector2(220, 535), textureManager.button, new Rectangle(220, 535, 520, 128));
 
-            nextLevelButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128));
-            exitButton = new Button(new Vector2(220, 535), textureManager.button, new Rectangle(220, 535, 520, 128));
-            backButton = new Button(new Vector2(40, 635), textureManager.button, new Rectangle(40, 635, 520, 128));
+            startButton = new Button(new Vector2(220, 205), textureManager.button, new Rectangle(220, 205, 520, 128), "Start Game");
+            levelButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128), "Level Select");
+            editorButton = new Button(new Vector2(220, 535), textureManager.button, new Rectangle(220, 535, 520, 128), "Level Editor");
+
+            nextLevelButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128), "Start Next Level");
+            exitButton = new Button(new Vector2(220, 535), textureManager.button, new Rectangle(220, 535, 520, 128), "Exit Game");
+
+            backButton = new Button(new Vector2(40, 672), textureManager.button, new Rectangle(40, 672, 520, 128), "Save and Exit");
+            map1Button = new Button(new Vector2(600, 672), textureManager.smallbutton, new Rectangle(600, 672, 128, 128), "1");
+            map2Button = new Button(new Vector2(728, 672), textureManager.smallbutton, new Rectangle(728, 672, 128, 128), "2");
+            map3Button = new Button(new Vector2(856, 672), textureManager.smallbutton, new Rectangle(856, 672, 128, 128), "3");
+            editorNullZone = new Rectangle(0, 672, 960, 128);
 
             healthBarList = new List<HealthBar>();
 
@@ -116,7 +125,7 @@ namespace pakeman
             }
             highscoreList = File.ReadAllLines("highscores.txt").ToList();
 
-            int healthBarTempPosX = textureManager.bottomMenu.Width-13- textureManager.health.Width;
+            int healthBarTempPosX = textureManager.bottomMenu.Width - 13 - textureManager.health.Width;
             for (int i = 0; i < 3; i++)
             {
                 Vector2 pos = new Vector2(healthBarTempPosX, 685);
@@ -125,30 +134,26 @@ namespace pakeman
                 healthBarTempPosX -= textureManager.health.Width + 5;
             }
 
-            List<string> strings = new List<string>();
-            StreamReader sr = new StreamReader("map1.txt");
+            for (int l = 0; l < 3; l++) {
 
-            while (!sr.EndOfStream)
-            {
-                strings.Add(sr.ReadLine());
-            }
+                List<string> strings = new List<string>();
+                StreamReader sr = new StreamReader(String.Format("map{0}.txt", l + 1));
+                while (!sr.EndOfStream)
+                {
+                    strings.Add(sr.ReadLine());
+                }
+                sr.Close();
 
-            sr.Close();
+                Tile[,] tileArr = new Tile[36, 27];
+                tileArr = new Tile[strings[0].Length, strings.Count];
+                mapList.Add(tileArr);
 
-            tileArr1 = new Tile[strings[0].Length, strings.Count];
-            tileArr2 = new Tile[strings[0].Length, strings.Count];
-            tileArr3 = new Tile[strings[0].Length, strings.Count];
-            mapList.Add(tileArr1);
-            mapList.Add(tileArr2);
-            mapList.Add(tileArr3);
-
-            for (int l = 0; l < 3; l++) { 
                 for (int i = 0; i < mapList[l].GetLength(0); i++)
                 {
                     for (int j = 0; j < mapList[l].GetLength(1); j++)
                     {
-                        Vector2 tempPos = new Vector2((i * TILESIZE) - 3*TILESIZE, (j * TILESIZE) - 3*TILESIZE);
-                        Rectangle tempRect = new Rectangle((i * TILESIZE) - 3*TILESIZE, (j * TILESIZE) - 3 * TILESIZE, TILESIZE, TILESIZE);
+                        Vector2 tempPos = new Vector2((i * TILESIZE) - 3 * TILESIZE, (j * TILESIZE) - 3 * TILESIZE);
+                        Rectangle tempRect = new Rectangle((i * TILESIZE) - 3 * TILESIZE, (j * TILESIZE) - 3 * TILESIZE, TILESIZE, TILESIZE);
                         if (strings[j][i] == 'X')
                         {
                             mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.Wall, textureManager.wallSheet, i, j);
@@ -157,13 +162,9 @@ namespace pakeman
                         {
                             mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.Standard, textureManager.blank, i, j);
                         }
-                        if (strings[j][i] == 'g')
-                        {
-                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.Gate, textureManager.blank, i, j);
-                        }
                         if (strings[j][i] == 'p')
                         {
-                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.PacmanSpawn, textureManager.blank, i, j); 
+                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.PacmanSpawn, textureManager.blank, i, j);
                         }
                         if (strings[j][i] == 'P')
                         {
@@ -186,7 +187,7 @@ namespace pakeman
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
 
-            
+
             if (mouseState.LeftButton == ButtonState.Released)
             {
                 mouseLReady = true;
@@ -195,7 +196,7 @@ namespace pakeman
             {
                 mouseRReady = true;
             }
-            
+
 
             mousePos = new Vector2(mouseState.Position.X, mouseState.Position.Y);
 
@@ -207,7 +208,7 @@ namespace pakeman
                         gameState = GameState.InGame;
 
                         tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
-                        tileManager.Initialize( pickupManager, enemyManager);
+                        tileManager.Initialize(pickupManager, enemyManager);
                     }
 
                     if (levelButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
@@ -223,15 +224,22 @@ namespace pakeman
                     break;
 
                 case GameState.InGame:
-    
+
                     double elapsed = gameTime.ElapsedGameTime.TotalSeconds;
                     double smallElapsed = gameTime.ElapsedGameTime.TotalMilliseconds;
 
                     if (pickupManager.list.Count == 0)
                     {
-                        gameState = GameState.Menu;
-                        pickupManager.Reset();
-                        enemyManager.Reset();
+                        if (currentMap == mapList.Count() - 1)
+                        {
+                            gameState = GameState.GameOver;
+                        }
+                        else
+                        {
+                            gameState = GameState.Menu;
+                            pickupManager.Reset();
+                            enemyManager.Reset();
+                        }
                     }
 
                     tileManager.Update(smallElapsed, gameState);
@@ -243,7 +251,7 @@ namespace pakeman
                     int healthCheck = 0;
                     while (player.health + healthCheck < 3 && player.health > 0)
                     {
-                        healthBarList[player.health-1].lost = false;
+                        healthBarList[player.health - 1].lost = false;
                         healthBarList[player.health + healthCheck].lost = true;
                         healthCheck++;
                     }
@@ -270,61 +278,120 @@ namespace pakeman
                     break;
                 case GameState.GameOver:
 
-                if ( !scoreCalculated ) { 
-                    if (scoreManager.score > 0) { 
-                        highscoreList.Add(scoreManager.score.ToString()) ;
-                    }
-                    foreach (string s in highscoreList)
-                    {
-                        sortingHighscoreList.Add(Int32.Parse(s));
-                    }
-                    sortingHighscoreList.Sort();
-                    sortingHighscoreList.Reverse();
+                    if (!scoreCalculated) {
+                        if (scoreManager.score > 0) {
+                            highscoreList.Add(scoreManager.score.ToString());
+                        }
+                        foreach (string s in highscoreList)
+                        {
+                            sortingHighscoreList.Add(Int32.Parse(s));
+                        }
+                        sortingHighscoreList.Sort();
+                        sortingHighscoreList.Reverse();
 
-                    highscoreList.Clear();
-                    if (sortingHighscoreList.Count > 10)
-                    {
-                        for (int j = 0; j < 10; j++)
+                        highscoreList.Clear();
+                        if (sortingHighscoreList.Count > 10)
                         {
-                            highscoreList.Add(sortingHighscoreList[j].ToString());
+                            for (int j = 0; j < 10; j++)
+                            {
+                                highscoreList.Add(sortingHighscoreList[j].ToString());
+                            }
                         }
-                    }
-                    else
-                    {
-                        foreach (int i in sortingHighscoreList)
+                        else
                         {
-                            highscoreList.Add(i.ToString());
+                            foreach (int i in sortingHighscoreList)
+                            {
+                                highscoreList.Add(i.ToString());
+                            }
                         }
+                        File.WriteAllLines("highscores.txt", highscoreList, Encoding.UTF8);
+                        scoreCalculated = true;
                     }
-                    File.WriteAllLines("highscores.txt", highscoreList, Encoding.UTF8);
-                    scoreCalculated = true;
-                }
-                    
-                break;
+
+                    break;
 
                 case GameState.LevelEditor:
-                    if (mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
+                    if (mouseState.LeftButton == ButtonState.Pressed && mouseLReady && !editorNullZone.Contains(mousePos))
                     {
                         mouseLReady = false;
                         tileManager.LevelEdit('l');
                     }
-                    if (mouseState.RightButton == ButtonState.Pressed && mouseRReady)
+                    if (mouseState.RightButton == ButtonState.Pressed && mouseRReady && !editorNullZone.Contains(mousePos))
                     {
                         mouseRReady = false;
                         tileManager.LevelEdit('r');
                     }
-                    
-                    if(backButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
+
+                    if (map1Button.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
                     {
-                        gameState = GameState.Title;
+                        mouseLReady = false;
+                        currentlyEditedMap = 1;
+                        tileManager.currentMap = (Tile[,])mapList[currentlyEditedMap-1].Clone();
                     }
+                    if (map2Button.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
+                    {
+                        mouseLReady = false;
+                        currentlyEditedMap = 2;
+                        tileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
+                    }
+                    if (map3Button.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
+                    {
+                        mouseLReady = false;
+                        currentlyEditedMap = 3;
+                        tileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
+                    }
+
+                    if (backButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        StringBuilder stringToAdd = new StringBuilder(50);
+                        gameState = GameState.Title;
+                        char[,] types = new char[36, 27];
+                        for (int i = 0; i < tileManager.currentMap.GetLength(1); i++)
+                        {
+                            for (int j = 0; j < tileManager.currentMap.GetLength(0); j++)
+                            {
+                                if(tileManager.currentMap[j, i].type == TileType.Wall) 
+                                {
+                                    types[j, i] = 'X';
+                                }
+                                if (tileManager.currentMap[j, i].type == TileType.Standard)
+                                {
+                                    types[j, i] = 'o';
+                                }
+                                if (tileManager.currentMap[j, i].type == TileType.PacmanSpawn)
+                                {
+                                    types[j, i] = 'p';
+                                }
+                                if (tileManager.currentMap[j, i].type == TileType.PowerUpSpawn)
+                                {
+                                    types[j, i] = 'P';
+                                }
+                                if (tileManager.currentMap[j, i].type == TileType.GhostSpawn)
+                                {
+                                    types[j, i] = 'e';
+                                }
+                            }
+                        }
+                        List<string> listToWrite = new List<string>();
+                        for (int j = 0; j < types.GetLength(1); j++)
+                        {
+                            for (int i = 0; i < types.GetLength(0); i++)
+                            {
+                                if (types[i, j] != null) 
+                                { stringToAdd.Append(types[i, j]); }
+                            } //this won't work probably but I'm too tired
+                            listToWrite.Add(stringToAdd.ToString());
+                            stringToAdd.Clear();
+                        }
+                        
+                        File.WriteAllLines(String.Format("map{0}.txt", currentlyEditedMap), listToWrite, Encoding.UTF8);
+                    }
+
 
                     tileManager.Update(0, gameState);
 
-
                     break;
             }
-
             
             base.Update(gameTime);
         }
@@ -337,9 +404,9 @@ namespace pakeman
             {
                 case GameState.Title:
 
-                    startButton.Draw(_spriteBatch, bigFont, "Start Game");
-                    levelButton.Draw(_spriteBatch, bigFont, "Level Select");
-                    editorButton.Draw(_spriteBatch, bigFont, "Level Editor");
+                    startButton.Draw(_spriteBatch, bigFont);
+                    levelButton.Draw(_spriteBatch, bigFont);
+                    editorButton.Draw(_spriteBatch, bigFont);
 
                     break;
 
@@ -372,8 +439,8 @@ namespace pakeman
 
                     _spriteBatch.DrawString(bigFont, scoreManager.score.ToString(), adjustedPos, Color.White);
 
-                    nextLevelButton.Draw(_spriteBatch, bigFont, "Start Next Level");
-                    exitButton.Draw(_spriteBatch, bigFont, "Exit Game");
+                    nextLevelButton.Draw(_spriteBatch, bigFont);
+                    exitButton.Draw(_spriteBatch, bigFont);
                     break;
 
                 case GameState.GameOver:
@@ -393,8 +460,13 @@ namespace pakeman
                 case GameState.LevelEditor:
 
                     tileManager.UpdateDraw(_spriteBatch, gameState);
-                    backButton.Draw(_spriteBatch, bigFont, "Back");
 
+                    _spriteBatch.Draw(textureManager.bottomMenu, new Vector2(0, 672), Color.White);
+
+                    backButton.Draw(_spriteBatch, bigFont);
+                    map1Button.Draw(_spriteBatch, bigFont);
+                    map2Button.Draw(_spriteBatch, bigFont);
+                    map3Button.Draw(_spriteBatch, bigFont);
                     break;
             }
 

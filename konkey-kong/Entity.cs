@@ -54,7 +54,7 @@ namespace pakeman
             spritebatch.Draw(tex, adjustedPos, srcRec, Color.White, rotation, new Vector2(16,16), 1, SpriteFx, 1);
             if(state == EntityState.Scared)
             {
-                spritebatch.Draw(tex, adjustedPos, srcRec, Color.Blue, rotation, new Vector2(16, 16), 1, SpriteFx, 1);
+                spritebatch.Draw(tex, adjustedPos, srcRec, Color.LightCyan, rotation, new Vector2(16, 16), 1, SpriteFx, 1);
             }
         }
         public void NeighborTiles(Tile[] tiles)
@@ -432,11 +432,160 @@ namespace pakeman
 
             srcRec.X = frame * size.Width;
         }
-        public void WhenScared(int pacPosX, int pacPosY)
+        public void Scared(Player player)
         {
-            if( state == EntityState.Scared )
+            int differenceX;
+            int differenceY;
+
+            differenceX = player.tilePosX - tilePosX;
+            differenceY = player.tilePosY - tilePosY;
+
+            if (Math.Abs(differenceX) > Math.Abs(differenceY))
             {
-                
+                if (differenceX < 0)
+                {
+                    if (tRight.type == TileType.Standard)
+                    {
+                        if (!isMoving) { EntityMoveStart(Direction.Right); }
+                        else { queuedDirection = Direction.Right; }
+
+                    }
+                    else
+                    {
+                        if (differenceY < 0 && tDown.type == TileType.Standard)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Down); }
+                            else { queuedDirection = Direction.Down; }
+                        }
+                        if (differenceY > 0 && tUp.type == TileType.Standard)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Up); }
+                            else { queuedDirection = Direction.Up; }
+                        }
+                        if (differenceY == 0)
+                        {
+                            if (tLeftDown.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Down); }
+                                else { queuedDirection = Direction.Right; }
+                            }
+                            if (tLeftUp.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Up); }
+                                else { queuedDirection = Direction.Right; }
+                            }
+                        }
+                    }
+                }
+                if (differenceX > 0)
+                {
+                    if (tLeft.type == TileType.Standard)
+                    {
+                        if (!isMoving) { EntityMoveStart(Direction.Left); }
+                        else { queuedDirection = Direction.Left; }
+                    }
+                    else
+                    {
+                        if (differenceY < 0 && tDown.type == TileType.Standard)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Down); }
+                            else { queuedDirection = Direction.Down; }
+                        }
+                        if (differenceY > 0 && tUp.type == TileType.Standard)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Up); }
+                            else { queuedDirection = Direction.Up; }
+                        }
+                        if (differenceY == 0)
+                        {
+                            if (tRightDown.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Down); }
+                                else { queuedDirection = Direction.Left; }
+                            }
+                            if (tRightUp.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Up); }
+                                else { queuedDirection = Direction.Left; }
+                            }
+                        }
+                    }
+                }
+            }//
+            if (Math.Abs(differenceY) > Math.Abs(differenceX))
+            {
+                if (differenceY < 0)
+                {
+                    if (tDown.type == TileType.Standard)
+                    {
+                        if (!isMoving) { EntityMoveStart(Direction.Down); }
+                        else { queuedDirection = Direction.Down; }
+                    }
+                    else
+                    {
+                        if (differenceX < 0)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Right); }
+                            else { queuedDirection = Direction.Right; }
+                        }
+                        if (differenceX > 0)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Left); }
+                            else { queuedDirection = Direction.Left; }
+                        }
+                        if (differenceX == 0)
+                        {
+                            if (tRightUp.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Right); }
+                                else { queuedDirection = Direction.Up; }
+                            }
+                            if (tLeftUp.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Left); }
+                                else { queuedDirection = Direction.Up; }
+                            }
+                        }
+                    }
+                    //move up
+                }
+                if (differenceY > 0)
+                {
+                    if (tUp.type == TileType.Standard)
+                    {
+                        if (!isMoving) { EntityMoveStart(Direction.Up); }
+                        else { queuedDirection = Direction.Up; }
+                    }
+                    else
+                    {
+                        if (differenceX < 0)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Right); }
+                            else { queuedDirection = Direction.Right; }
+                        }
+                        if (differenceX > 0)
+                        {
+                            if (!isMoving) { EntityMoveStart(Direction.Left); }
+                            else { queuedDirection = Direction.Left; }
+                        }
+                        if (differenceX == 0)
+                        {
+                            if (tRightDown.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Right); }
+                                else { queuedDirection = Direction.Down; }
+                            }
+                            if (tLeftDown.type == TileType.Standard)
+                            {
+                                if (!isMoving) { EntityMoveStart(Direction.Left); }
+                                else { queuedDirection = Direction.Down; }
+                            }
+                        }
+                    }
+                    //move down
+                }
+            
+        
 
 
             }
@@ -513,6 +662,19 @@ namespace pakeman
                                 if (!isMoving) { EntityMoveStart(Direction.Down); }
                                 else { queuedDirection = Direction.Down; }
                             }
+                            if (differenceY == 0 )
+                            {
+                                if(tLeftDown.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Down); }
+                                    else { queuedDirection = Direction.Left; }
+                                }
+                                if (tLeftUp.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Up); }
+                                    else { queuedDirection = Direction.Left; }
+                                }
+                            }
                         }
                     }
                     if ( differenceX > 0)
@@ -533,6 +695,19 @@ namespace pakeman
                             {
                                 if (!isMoving) { EntityMoveStart(Direction.Down); }
                                 else { queuedDirection = Direction.Down; }
+                            }
+                            if (differenceY == 0)
+                            {
+                                if (tRightDown.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Down); }
+                                    else { queuedDirection = Direction.Right; }
+                                }
+                                if (tRightUp.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Up); }
+                                    else { queuedDirection = Direction.Right; }
+                                }
                             }
                         }
                     }
@@ -558,6 +733,19 @@ namespace pakeman
                                 if (!isMoving) { EntityMoveStart(Direction.Right); }
                                 else { queuedDirection = Direction.Right; }
                             }
+                            if (differenceX == 0)
+                            {
+                                if (tLeftUp.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Left); }
+                                    else { queuedDirection = Direction.Up; }
+                                }
+                                if (tRightUp.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Right); }
+                                    else { queuedDirection = Direction.Up; }
+                                }
+                            }
                         }
                         //move up
                     }
@@ -580,63 +768,26 @@ namespace pakeman
                                 if (!isMoving) { EntityMoveStart(Direction.Right); }
                                 else { queuedDirection = Direction.Right; }
                             }
+                            if (differenceX == 0)
+                            {
+                                if (tLeftDown.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Left); }
+                                    else { queuedDirection = Direction.Down; }
+                                }
+                                if (tRightDown.type == TileType.Standard)
+                                {
+                                    if (!isMoving) { EntityMoveStart(Direction.Right); }
+                                    else { queuedDirection = Direction.Down; }
+                                }
+                            }
                         }   
                         //move down
                     }
                 }
                 
 
-
-
-
-                /*if (player.tilePosX < tilePosX)
-                {
-                    if (tRight.type != TileType.Wall)
-                    {
-                        queuedDirection = Direction.Right;
-                    } else if (player.tilePosY < tilePosY)
-                    {
-                        queuedDirection = Direction.Down;
-                    } else
-                    {
-                        queuedDirection = Direction.Up;
-                    }
-                }
-                else
-                {
-                    if (tLeft.type != TileType.Wall)
-                    {
-                        queuedDirection = Direction.Left;
-                    }
-                    else if (player.tilePosY < tilePosY)
-                    {
-                        queuedDirection = Direction.Down;
-                    }
-                    else
-                    {
-                        queuedDirection = Direction.Up;
-                    }
-                }*/
             }
         }
-
     }
-    
-    //public class EnemyWall : Enemy
-    //{
-    //    public EnemyWall(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, int type) : base(pos, size, tex, tileX, tileY, type)
-    //    {
-    //    }
-    //    new public void ArtificialIntelligence()
-    //    {
-    //        Random rnd = new Random();
-    //        if (!isMoving)
-    //        {
-    //            chosenDir = (Direction)rnd.Next(0, 4);
-    //            EntityMoveStart(chosenDir);
-    //        }
-
-    //    }
-
-    //}
 }

@@ -74,11 +74,9 @@ namespace pakeman
                     t.type = TileType.Standard;
                     powerupAlternate *= -1;
                 }
-                if (t.type == TileType.Gate)
-                {
-                    t.type = TileType.Standard;
-                }
             }
+            player.Death();
+            player.health++;
 
         }
 

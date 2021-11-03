@@ -207,6 +207,18 @@
 /processorParam:TextureFormat=Color
 /build:powerup2.png
 
+#begin smallbutton.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:smallbutton.png
+
 #begin stawbebbi.png
 /importer:TextureImporter
 /processor:TextureProcessor

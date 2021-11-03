@@ -26,8 +26,15 @@ namespace pakeman
             {
                 e.NeighborTiles(tiles.NeighborTiles(e.tilePosX, e.tilePosY));
                 e.EntityMove();
-                e.WhenScared(player.tilePosX, player.tilePosY);
-                e.ArtificialIntelligence(player);
+                if(player.state == EntityState.PowerupGhost && e.state != EntityState.Death)
+                {
+                    e.state = EntityState.Scared;
+                    e.Scared(player);
+                } else { e.ArtificialIntelligence(player); }
+                if(player.state != EntityState.PowerupGhost && e.state != EntityState.Death)
+                {
+                    e.state = EntityState.Default;
+                }
                 e.Anim(time);
 
                 Collision(e, player, score);

@@ -15,7 +15,7 @@ namespace pakeman
     public class TextureManager
     {
         public Texture2D health, ghost, point, pickup, blank, wallSheet, pakeman, pakemandeath
-            , bottomMenu, orange, strawberry, cherry, button, powerupWall, powerupGhost;
+            , bottomMenu, orange, strawberry, cherry, button, powerupWall, powerupGhost, smallbutton;
 
         public void Load(ContentManager Content)
         {
@@ -24,6 +24,7 @@ namespace pakeman
             cherry = Content.Load<Texture2D>(@"cherry");
             bottomMenu = Content.Load<Texture2D>(@"bottommenusketch");
             button = Content.Load<Texture2D>(@"button");
+            smallbutton = Content.Load<Texture2D>(@"smallbutton");
             health = Content.Load<Texture2D>(@"health");
             point = Content.Load<Texture2D>(@"points");
             powerupGhost = Content.Load<Texture2D>(@"powerup1");
