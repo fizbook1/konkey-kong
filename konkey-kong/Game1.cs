@@ -41,6 +41,8 @@ namespace pakeman
         Button levelButton;
         Button editorButton;
 
+        Button restartButton;
+
         Button nextLevelButton;
         Button exitButton;
 
@@ -108,8 +110,10 @@ namespace pakeman
             levelButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128), "Level Select");
             editorButton = new Button(new Vector2(220, 535), textureManager.button, new Rectangle(220, 535, 520, 128), "Level Editor");
 
+            restartButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128), "Main Menu");
+
             nextLevelButton = new Button(new Vector2(220, 370), textureManager.button, new Rectangle(220, 370, 520, 128), "Start Next Level");
-            exitButton = new Button(new Vector2(220, 535), textureManager.button, new Rectangle(220, 535, 520, 128), "Exit Game");
+            exitButton = new Button(new Vector2(220, 635), textureManager.button, new Rectangle(220, 635, 520, 128), "Exit Game");
 
             backButton = new Button(new Vector2(40, 672), textureManager.button, new Rectangle(40, 672, 520, 128), "Save and Exit");
             map1Button = new Button(new Vector2(600, 672), textureManager.smallbutton, new Rectangle(600, 672, 128, 128), "1");
@@ -196,7 +200,7 @@ namespace pakeman
             {
                 mouseRReady = true;
             }
-
+            
 
             mousePos = new Vector2(mouseState.Position.X, mouseState.Position.Y);
 
@@ -206,18 +210,21 @@ namespace pakeman
 
                     if (startButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed) {
                         gameState = GameState.InGame;
-
+                        mouseLReady = false;
+                        //make this a deep copy somehow
                         tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
                         tileManager.Initialize(pickupManager, enemyManager);
                     }
 
                     if (levelButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
                     {
+                        mouseLReady = false;
                         gameState = GameState.GameOver;
                     }
 
                     if (editorButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
                     {
+                        mouseLReady = false;
                         gameState = GameState.LevelEditor;
                         tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
                     }
@@ -306,6 +313,17 @@ namespace pakeman
                         }
                         File.WriteAllLines("highscores.txt", highscoreList, Encoding.UTF8);
                         scoreCalculated = true;
+                    }
+                    if (restartButton.size.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
+                    {
+                        gameState = GameState.Title;
+                        scoreCalculated = false;
+                        scoreManager.score = 0;
+                        pickupManager.Reset();
+                        enemyManager.Reset();
+                        
+                        mouseLReady = false;
+                        player.health = 3;
                     }
 
                     break;
@@ -455,6 +473,7 @@ namespace pakeman
 
 
                     _spriteBatch.DrawString(font, "High Scores", new Vector2(300 + 50, 825 + 50), Color.White);
+                    restartButton.Draw(_spriteBatch, bigFont);
                     break;
 
                 case GameState.LevelEditor:
