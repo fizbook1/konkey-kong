@@ -22,7 +22,7 @@ namespace pakeman
             orange = Content.Load<Texture2D>(@"orange");
             strawberry = Content.Load<Texture2D>(@"stawbebbi");
             cherry = Content.Load<Texture2D>(@"cherry");
-            bottomMenu = Content.Load<Texture2D>(@"bottommenusketch");
+            bottomMenu = Content.Load<Texture2D>(@"bottommenu");
             button = Content.Load<Texture2D>(@"button");
             smallbutton = Content.Load<Texture2D>(@"smallbutton");
             health = Content.Load<Texture2D>(@"health");

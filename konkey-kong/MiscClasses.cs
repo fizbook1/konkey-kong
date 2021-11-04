@@ -92,6 +92,14 @@ namespace pakeman
             spriteBatch.Draw(tex, pos, Color.White);
             spriteBatch.DrawString(spriteFont, printedString, adjustedPos, Color.White);
         }
+
+        public bool Update(Vector2 mousePos)
+        {
+            if (size.Contains(mousePos))
+            {
+                return true;
+            } else { return false; }
+        }
     }
 
     class HealthBar
@@ -108,13 +116,9 @@ namespace pakeman
 
             if (lost)
             {
-                frameTimer -= time;
-                if (frameTimer <= 0 && frame < 3)
-                {
-                    frameTimer = 56;
-                    frame++;
-                }
+                frame = 1;
             }
+            else { frame = 0; }
             srcRec.X = frame * 50;
 
 

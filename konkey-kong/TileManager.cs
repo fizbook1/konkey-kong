@@ -40,7 +40,6 @@ namespace pakeman
                         enemyCreator.respawnTile = t;
                         enemy.enemies.Add(enemyCreator);
                         ghostscreated++;
-                        t.type = TileType.Standard;
                     }
                 }
                 if (t.type == TileType.PacmanSpawn)
@@ -50,7 +49,6 @@ namespace pakeman
                     player.tilePosX = t.posX;
                     player.tilePosY = t.posY;
                     player.respawnTile = t;
-                    t.type = TileType.Standard;
                 }
                 if (t.type == TileType.Standard)
                 {
@@ -71,7 +69,6 @@ namespace pakeman
                         pickupCreator.value = 100;
                         pickup.list.Add(pickupCreator);
                     }
-                    t.type = TileType.Standard;
                     powerupAlternate *= -1;
                 }
             }

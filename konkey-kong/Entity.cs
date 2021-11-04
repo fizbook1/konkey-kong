@@ -107,9 +107,16 @@ namespace pakeman
             switch (direction)
             {
                 case Direction.Left:
-                    if(tLeft.type == TileType.Standard || state == EntityState.PowerupWall && tLeft.posX > 1) 
+                    if(tLeft.type != TileType.Wall || state == EntityState.PowerupWall && tLeft.posX > 1) 
                     { 
-                        speed.X = -2;
+                        if(state == EntityState.Scared)
+                        {
+                            speed.X = -1;
+                        } else 
+                        { 
+                            speed.X = -2; 
+                        }
+                        
                         isMoving = true;
                         oldPos.X = pos.X;
                         dir = Direction.Left;
@@ -117,9 +124,16 @@ namespace pakeman
 
                     break;
                 case Direction.Right:
-                    if (tRight.type == TileType.Standard || state == EntityState.PowerupWall && tRight.posX < 35)
+                    if (tRight.type != TileType.Wall || state == EntityState.PowerupWall && tRight.posX < 35)
                     {
-                        speed.X = 2;
+                        if (state == EntityState.Scared)
+                        {
+                            speed.X = 1;
+                        }
+                        else
+                        {
+                            speed.X = 2;
+                        }
                         isMoving = true;
                         oldPos.X = pos.X;
                         dir = Direction.Right;
@@ -127,9 +141,16 @@ namespace pakeman
 
                     break;
                 case Direction.Down:
-                    if (tDown.type == TileType.Standard || state == EntityState.PowerupWall && tDown.posY < 25)
+                    if (tDown.type != TileType.Wall || state == EntityState.PowerupWall && tDown.posY < 25)
                     {
-                        speed.Y = 2;
+                        if (state == EntityState.Scared)
+                        {
+                            speed.Y = 1;
+                        }
+                        else
+                        {
+                            speed.Y = 2;
+                        }
                         isMoving = true;
                         oldPos.Y = pos.Y;
                         dir = Direction.Down;
@@ -137,9 +158,16 @@ namespace pakeman
 
                     break;
                 case Direction.Up:
-                    if (tUp.type == TileType.Standard || state == EntityState.PowerupWall && tUp.posY > 1)
+                    if (tUp.type != TileType.Wall || state == EntityState.PowerupWall && tUp.posY > 1)
                     {
-                        speed.Y = -2;
+                        if (state == EntityState.Scared)
+                        {
+                            speed.Y = -1;
+                        }
+                        else
+                        {
+                            speed.Y = -2;
+                        }
                         isMoving = true;
                         oldPos.Y = pos.Y;
                         dir = Direction.Up;
@@ -230,25 +258,43 @@ namespace pakeman
                     {
                         case Direction.Left:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection);
+                            if(tLeft.type != TileType.Wall || state == EntityState.PowerupWall)
+                            {
+                                EntityMoveStart(queuedDirection);
+                            }
+                            else { EntityMoveStart(dir); }
 
                             break;
 
                         case Direction.Up:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection);
+
+                            if (tUp.type != TileType.Wall || state == EntityState.PowerupWall)
+                            {
+                                EntityMoveStart(queuedDirection);
+                            }
+                            else { EntityMoveStart(dir); }
 
                             break;
 
                         case Direction.Right:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection);
+                            if (tRight.type != TileType.Wall || state == EntityState.PowerupWall)
+                            {
+                                EntityMoveStart(queuedDirection);
+                            }
+                            else { EntityMoveStart(dir); }
 
                             break;
 
                         case Direction.Down:
                             UpdateNeighborTiles(dir);
-                            EntityMoveStart(queuedDirection);
+                            if (tDown.type != TileType.Wall || state == EntityState.PowerupWall)
+                            {
+                                EntityMoveStart(queuedDirection);
+                            }
+                            else { EntityMoveStart(dir); }
+
 
                             break;
                     }
@@ -644,7 +690,7 @@ namespace pakeman
                 {
                     if( differenceX < 0)
                     {
-                        if(tLeft.type == TileType.Standard)
+                        if(tLeft.type != TileType.Wall)
                         {
                             if(!isMoving) { EntityMoveStart(Direction.Left); }
                             else { queuedDirection = Direction.Left; }
@@ -652,24 +698,24 @@ namespace pakeman
                         } 
                         else
                         {
-                            if (differenceY < 0 && tUp.type == TileType.Standard)
+                            if (differenceY < 0 && tUp.type != TileType.Wall)
                             {
                                 if (!isMoving) { EntityMoveStart(Direction.Up); }
                                 else { queuedDirection = Direction.Up; }
                             }
-                            if (differenceY > 0 && tDown.type == TileType.Standard)
+                            if (differenceY > 0 && tDown.type != TileType.Wall)
                             {
                                 if (!isMoving) { EntityMoveStart(Direction.Down); }
                                 else { queuedDirection = Direction.Down; }
                             }
                             if (differenceY == 0 )
                             {
-                                if(tLeftDown.type == TileType.Standard)
+                                if(tLeftDown.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Down); }
                                     else { queuedDirection = Direction.Left; }
                                 }
-                                if (tLeftUp.type == TileType.Standard)
+                                if (tLeftUp.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Up); }
                                     else { queuedDirection = Direction.Left; }
@@ -679,31 +725,31 @@ namespace pakeman
                     }
                     if ( differenceX > 0)
                     {
-                        if (tRight.type == TileType.Standard)
+                        if (tRight.type != TileType.Wall)
                         {
                             if (!isMoving) { EntityMoveStart(Direction.Right); }
                             else { queuedDirection = Direction.Right; }
                         }
                         else
                         {
-                            if (differenceY < 0 && tUp.type == TileType.Standard)
+                            if (differenceY < 0 && tUp.type != TileType.Wall)
                             {
                                 if (!isMoving) { EntityMoveStart(Direction.Up); }
                                 else { queuedDirection = Direction.Up; }
                             }
-                            if (differenceY > 0 && tDown.type == TileType.Standard)
+                            if (differenceY > 0 && tDown.type != TileType.Wall)
                             {
                                 if (!isMoving) { EntityMoveStart(Direction.Down); }
                                 else { queuedDirection = Direction.Down; }
                             }
                             if (differenceY == 0)
                             {
-                                if (tRightDown.type == TileType.Standard)
+                                if (tRightDown.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Down); }
                                     else { queuedDirection = Direction.Right; }
                                 }
-                                if (tRightUp.type == TileType.Standard)
+                                if (tRightUp.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Up); }
                                     else { queuedDirection = Direction.Right; }
@@ -716,7 +762,7 @@ namespace pakeman
                 {
                     if (differenceY < 0)
                     {
-                        if (tUp.type == TileType.Standard)
+                        if (tUp.type != TileType.Wall)
                         {
                             if (!isMoving) { EntityMoveStart(Direction.Up); }
                             else { queuedDirection = Direction.Up; }
@@ -735,12 +781,12 @@ namespace pakeman
                             }
                             if (differenceX == 0)
                             {
-                                if (tLeftUp.type == TileType.Standard)
+                                if (tLeftUp.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Left); }
                                     else { queuedDirection = Direction.Up; }
                                 }
-                                if (tRightUp.type == TileType.Standard)
+                                if (tRightUp.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Right); }
                                     else { queuedDirection = Direction.Up; }
@@ -751,7 +797,7 @@ namespace pakeman
                     }
                     if (differenceY > 0)
                     {
-                        if (tDown.type == TileType.Standard)
+                        if (tDown.type != TileType.Wall)
                         {
                             if (!isMoving) { EntityMoveStart(Direction.Down); }
                             else { queuedDirection = Direction.Down; }
@@ -770,12 +816,12 @@ namespace pakeman
                             }
                             if (differenceX == 0)
                             {
-                                if (tLeftDown.type == TileType.Standard)
+                                if (tLeftDown.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Left); }
                                     else { queuedDirection = Direction.Down; }
                                 }
-                                if (tRightDown.type == TileType.Standard)
+                                if (tRightDown.type != TileType.Wall)
                                 {
                                     if (!isMoving) { EntityMoveStart(Direction.Right); }
                                     else { queuedDirection = Direction.Down; }
