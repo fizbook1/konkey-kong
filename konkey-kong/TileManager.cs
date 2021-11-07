@@ -36,8 +36,16 @@ namespace pakeman
                 {
                     if (ghostscreated < 3)
                     {
-                        Enemy enemyCreator = new Enemy(t.pos, t.size, textures.ghost, t.posX, t.posY, ghostscreated);
+                        Enemy enemyCreator = new Enemy(t.pos, t.size, textures.ghost, t.posX, t.posY, textures.ghost, textures.ghostscared, ghostscreated);
                         enemyCreator.respawnTile = t;
+                        if(ghostscreated == 1)
+                        {
+                            enemyCreator.defaultTex = textures.ghost2;
+                        }
+                        if (ghostscreated == 2)
+                        {
+                            enemyCreator.defaultTex = textures.ghost3;
+                        }
                         enemy.enemies.Add(enemyCreator);
                         ghostscreated++;
                     }

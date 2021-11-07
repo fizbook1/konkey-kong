@@ -17,7 +17,7 @@ namespace pakeman
         Random rnd = new Random();
         const int TILESIZE = 32;
 
-        public enum GameState { Title = 0, InGame = 1, GameOver = 2, Menu = 3, LevelEditor = 4 }
+        public enum GameState { Title = 0, InGame = 1, GameOver = 2, Menu = 3, LevelEditor = 4, Credits = 5 }
 
         GameState gameState = GameState.Title;
 
@@ -25,6 +25,7 @@ namespace pakeman
 
         Color bgcolor = new Color(13, 4, 25);
 
+        SoundManager soundManager;
         TextureManager textureManager;
         TileManager tileManager;
         EnemyManager enemyManager;
@@ -78,6 +79,8 @@ namespace pakeman
 
             textureManager = new TextureManager();
             textureManager.Load(Content);
+            soundManager = new SoundManager();
+            soundManager.Load(Content);
 
             mapList = new List<Tile[,]>();
             highscoreList = new List<string>();
@@ -174,8 +177,8 @@ namespace pakeman
             {
                 mouseRReady = true;
             }
-            
 
+            soundManager.Music(gameState, currentMap);
             mousePos = new Vector2(mouseState.Position.X, mouseState.Position.Y);
 
             switch (gameState)
@@ -199,10 +202,28 @@ namespace pakeman
                             gameState = GameState.LevelEditor;
                             tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
                         }
+                        if (buttonManager.quitGame.Update(mousePos))
+                        {
+                            this.Exit();
+                        }
+                        if (buttonManager.credits.Update(mousePos))
+                        {
+                            gameState = GameState.Credits;
+                        }
                         mouseLReady = false;
                         
                     }
 
+                    break;
+                case GameState.Credits:
+                    if (mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
+                    {
+                        if (buttonManager.restart.Update(mousePos))
+                        {
+                            gameState = GameState.Title;
+                        }
+                        mouseLReady = false;
+                    }
                     break;
 
                 case GameState.InGame:
@@ -362,7 +383,7 @@ namespace pakeman
 
                             File.WriteAllLines(String.Format("map{0}.txt", currentlyEditedMap), listToWrite, Encoding.UTF8);
                         }
-
+                        mouseLReady = false;
                     }
 
 
@@ -382,8 +403,46 @@ namespace pakeman
             {
                 case GameState.Title:
 
+                    _spriteBatch.Draw(textureManager.logo, new Vector2(140, 35), Color.White);
+
                     break;
 
+                case GameState.Credits:
+
+                    Vector2 adjustedPos2 = new Vector2();
+
+                    adjustedPos2.Y = (Window.ClientBounds.Height / 2 - font.MeasureString(scoreManager.ToString()).Y / 2) - 200;
+                    adjustedPos2.X = (Window.ClientBounds.Width / 2 - font.MeasureString(scoreManager.ToString()).X / 2) - 40;
+
+                    _spriteBatch.DrawString(font, @"Ethernight Club Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/", new Vector2((Window.ClientBounds.Width / 2) - 200, 40), Color.White);
+
+                    _spriteBatch.DrawString(font, @"Space Jazz Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/", new Vector2((Window.ClientBounds.Width / 2) - 200, 120), Color.White);
+
+                    _spriteBatch.DrawString(font, @"Canon In D For 8 Bit Synths Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/" , new Vector2((Window.ClientBounds.Width/2) - 200, 200), Color.White);
+
+                    _spriteBatch.DrawString(font, @"Ether Vox Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/", new Vector2((Window.ClientBounds.Width / 2) - 200, 280), Color.White);
+
+                    _spriteBatch.DrawString(font, @"Neon Laser Horizon Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/", new Vector2((Window.ClientBounds.Width / 2) - 200, 360), Color.White);
+
+                    _spriteBatch.DrawString(font, @"Newer Wave Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/", new Vector2((Window.ClientBounds.Width / 2) - 200, 440), Color.White);
+
+                    _spriteBatch.DrawString(font, @"Voxel Revolution Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/" , new Vector2((Window.ClientBounds.Width / 2) - 200, 520), Color.White);
+
+                    break;
                 case GameState.InGame:
 
 

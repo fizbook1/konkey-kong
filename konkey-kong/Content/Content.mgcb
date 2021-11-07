@@ -13,17 +13,59 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin audio/music1.wav
+#begin audio/buton.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/music1.wav
+/build:audio/buton.wav
 
-#begin audio/music2.wav
+#begin audio/ghostDead.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/music2.wav
+/build:audio/ghostDead.wav
+
+#begin audio/music/Canon_In_D_For_8_Bit_Synths-Highscore.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Canon_In_D_For_8_Bit_Synths-Highscore.wav
+
+#begin audio/music/Ether_Vox-NextLevel.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Ether_Vox-NextLevel.wav
+
+#begin audio/music/Ethernight_Club-Level1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Ethernight_Club-Level1.wav
+
+#begin audio/music/Neon_Laser_Horizon-Level3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Neon_Laser_Horizon-Level3.wav
+
+#begin audio/music/Newer_Wave-LevelEdit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Newer_Wave-LevelEdit.wav
+
+#begin audio/music/Space_Jazz-Titlemusic.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Space_Jazz-Titlemusic.wav
+
+#begin audio/music/Voxel_Revolution-Level2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Voxel_Revolution-Level2.wav
 
 #begin audio/pakemanDead.wav
 /importer:WavImporter
@@ -31,11 +73,11 @@
 /processorParam:Quality=Best
 /build:audio/pakemanDead.wav
 
-#begin audio/pickup.wav
+#begin audio/pickups.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/pickup.wav
+/build:audio/pickups.wav
 
 #begin audio/powerup.wav
 /importer:WavImporter
@@ -134,6 +176,42 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:ghost.png
+
+#begin ghost2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ghost2.png
+
+#begin ghost3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ghost3.png
+
+#begin ghostscared.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ghostscared.png
 
 #begin health.png
 /importer:TextureImporter
@@ -284,4 +362,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:tilewall2.png
+
+#begin title.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:title.png
 

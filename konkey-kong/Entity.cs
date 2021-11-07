@@ -450,9 +450,13 @@ namespace pakeman
         public int type;
         protected Direction chosenDir;
         protected bool stopped;
-        public Enemy(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, int type) : base(pos, size, tex, tileX, tileY)
+        public Texture2D defaultTex;
+        protected Texture2D scaredTex;
+        public Enemy(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, Texture2D defaultTex, Texture2D scaredTex, int type) : base(pos, size, tex, tileX, tileY)
         {
             this.type = type;
+            this.defaultTex = defaultTex;
+            this.scaredTex = scaredTex;
         }
         public void Anim(double time)
         {
@@ -654,6 +658,18 @@ namespace pakeman
             state = EntityState.Default;
             frame = 0;
             isMoving = false;
+        }
+        public void ToggleTex()
+        {
+            if(state == EntityState.Scared)
+            {
+                tex = scaredTex;
+            }
+            else
+            {
+                tex = defaultTex;
+            }
+
         }
         public void ArtificialIntelligence(Player player)
         {
