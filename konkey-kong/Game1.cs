@@ -17,7 +17,7 @@ namespace pakeman
         Random rnd = new Random();
         const int TILESIZE = 32;
 
-        public enum GameState { Title = 0, InGame = 1, GameOver = 2, Menu = 3, LevelEditor = 4, Credits = 5 }
+        public enum GameState { Title = 0, InGame = 1, GameOver = 2, Menu = 3, LevelEditor = 4, Credits = 5, Settings = 6 }
 
         GameState gameState = GameState.Title;
 
@@ -47,6 +47,8 @@ namespace pakeman
         bool mouseRReady = false;
 
         bool finalScoreCreated = false;
+        bool paused = false;
+        GameState previousState;
 
         Player player;
 
@@ -82,14 +84,19 @@ namespace pakeman
             soundManager = new SoundManager();
             soundManager.Load(Content);
 
+            AudioSlider music = new AudioSlider(textureManager.slidercursor, textureManager.sliderfill, textureManager.sliderbar, new Vector2(500, 400));
+            AudioSlider sound = new AudioSlider(textureManager.slidercursor, textureManager.sliderfill, textureManager.sliderbar, new Vector2(200, 400));
+            soundManager.musicSlider = music;
+            soundManager.soundSlider = sound;
+
             mapList = new List<Tile[,]>();
             highscoreList = new List<string>();
             sortingHighscoreList = new List<int>();
 
-            player = new Player(new Vector2(0, 0), new Rectangle(0, 0, 0, 0), textureManager.pakeman, 0, 0, textureManager);
+            player = new Player(new Vector2(0, 0), new Rectangle(0, 0, 0, 0), textureManager.pakeman, 0, 0, textureManager, soundManager);
 
-            tileManager = new TileManager(textureManager, player);
-            pickupManager = new PickupManager(textureManager);
+            tileManager = new TileManager(textureManager, player, soundManager);
+            pickupManager = new PickupManager(textureManager, soundManager);
             scoreManager = new ScoreManager();
             enemyManager = new EnemyManager(textureManager);
             buttonManager = new ButtonManager(textureManager);
@@ -98,7 +105,7 @@ namespace pakeman
 
             healthBarList = new List<HealthBar>();
 
-            buttonManager.Initialize();
+            buttonManager.Initialize(soundManager);
 
             if (File.Exists("highscores.txt") == false)
             {
@@ -168,7 +175,6 @@ namespace pakeman
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
 
-
             if (mouseState.LeftButton == ButtonState.Released)
             {
                 mouseLReady = true;
@@ -210,6 +216,11 @@ namespace pakeman
                         {
                             gameState = GameState.Credits;
                         }
+                        if (buttonManager.settings.Update(mousePos))
+                        {
+                            gameState = GameState.Settings;
+                            previousState = GameState.Title;
+                        }
                         mouseLReady = false;
                         
                     }
@@ -225,11 +236,28 @@ namespace pakeman
                         mouseLReady = false;
                     }
                     break;
+                case GameState.Settings:
+                    soundManager.Update(mousePos, mouseState.LeftButton == ButtonState.Pressed);
+                    if (mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
+                    {
+                        if (buttonManager.backtogame.Update(mousePos))
+                        {
+                            gameState = previousState;
+                        }
+                        mouseLReady = false;
+                    }
+                    break;
 
                 case GameState.InGame:
 
                     double elapsed = gameTime.ElapsedGameTime.TotalSeconds;
                     double smallElapsed = gameTime.ElapsedGameTime.TotalMilliseconds;
+
+                    if(keyboardState.IsKeyDown(Keys.Escape))
+                    {
+                        gameState = GameState.Menu;
+                        paused = true;
+                    }
 
                     if (pickupManager.list.Count == 0)
                     {
@@ -268,14 +296,26 @@ namespace pakeman
 
                     if (mouseState.LeftButton == ButtonState.Pressed && mouseLReady)
                     {
-                        if (buttonManager.nextLevel.Update(mousePos))
+                        if (paused)
+                        {
+                            if( buttonManager.backtogame.Update(mousePos))
+                            {
+                                gameState = GameState.InGame;
+                                paused = false;
+                            }
+                        } else if (buttonManager.nextLevel.Update(mousePos))
                         {
                             currentMap++;
                             tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
                             tileManager.Initialize(pickupManager, enemyManager);
                             gameState = GameState.InGame;
                         }
-                        if(buttonManager.exit.Update(mousePos))
+                        if (buttonManager.settings.Update(mousePos))
+                        {
+                            gameState = GameState.Settings;
+                            previousState = GameState.Menu;
+                        }
+                        if (buttonManager.exit.Update(mousePos))
                         {
                             gameState = GameState.GameOver;
                         }
@@ -304,6 +344,53 @@ namespace pakeman
                             }
                             mouseLReady = false;
                             player.health = 3;
+                            soundManager.Reset();
+                            currentMap = 0;
+                            mapList.Clear();
+                            for (int l = 0; l < 3; l++)
+                            {
+
+                                List<string> strings = new List<string>();
+                                StreamReader sr = new StreamReader(String.Format("map{0}.txt", l + 1));
+                                while (!sr.EndOfStream)
+                                {
+                                    strings.Add(sr.ReadLine());
+                                }
+                                sr.Close();
+
+                                Tile[,] tileArr = new Tile[36, 27];
+                                tileArr = new Tile[strings[0].Length, strings.Count];
+                                mapList.Add(tileArr);
+
+                                for (int i = 0; i < mapList[l].GetLength(0); i++)
+                                {
+                                    for (int j = 0; j < mapList[l].GetLength(1); j++)
+                                    {
+                                        Vector2 tempPos = new Vector2((i * TILESIZE) - 3 * TILESIZE, (j * TILESIZE) - 3 * TILESIZE);
+                                        Rectangle tempRect = new Rectangle((i * TILESIZE) - 3 * TILESIZE, (j * TILESIZE) - 3 * TILESIZE, TILESIZE, TILESIZE);
+                                        if (strings[j][i] == 'X')
+                                        {
+                                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.Wall, textureManager.wallSheet, i, j);
+                                        }
+                                        if (strings[j][i] == 'o')
+                                        {
+                                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.Standard, textureManager.blank, i, j);
+                                        }
+                                        if (strings[j][i] == 'p')
+                                        {
+                                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.PacmanSpawn, textureManager.blank, i, j);
+                                        }
+                                        if (strings[j][i] == 'P')
+                                        {
+                                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.PowerUpSpawn, textureManager.blank, i, j);
+                                        }
+                                        if (strings[j][i] == 'e')
+                                        {
+                                            mapList[l][i, j] = new Tile(tempPos, tempRect, TileType.GhostSpawn, textureManager.blank, i, j);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -332,7 +419,7 @@ namespace pakeman
                         {
                             currentlyEditedMap = 2;
                             tileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
-                        }
+                        }   
                         if (buttonManager.map3.Update(mousePos))
                         {
                             currentlyEditedMap = 3;
@@ -404,6 +491,15 @@ namespace pakeman
                 case GameState.Title:
 
                     _spriteBatch.Draw(textureManager.logo, new Vector2(140, 35), Color.White);
+
+                    break;
+
+                case GameState.Settings: 
+
+                    _spriteBatch.DrawString(bigFont, "Sound Volume", new Vector2(180, 350), Color.White);
+                    soundManager.soundSlider.Draw(_spriteBatch);
+                    _spriteBatch.DrawString(bigFont, "Music Volume", new Vector2(510, 350), Color.White);
+                    soundManager.musicSlider.Draw(_spriteBatch);
 
                     break;
 
@@ -502,7 +598,7 @@ http://creativecommons.org/licenses/by/3.0/" , new Vector2((Window.ClientBounds.
                     break;
             }
 
-            buttonManager.UpdateDraw(gameState, _spriteBatch, bigFont);
+            buttonManager.UpdateDraw(gameState, _spriteBatch, bigFont, paused);
             base.Draw(gameTime);
             _spriteBatch.End();
         }

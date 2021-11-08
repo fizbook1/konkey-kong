@@ -14,13 +14,15 @@ namespace pakeman
     public class PickupManager
     {
         TextureManager textures;
+        SoundManager sound;
         double bigPickupTimer = 20000;
         const double BIGPICKUPTIMER = 20000;
         int bigPickupsCreated = 0;
         bool bigPickupCreated = false;
-        public PickupManager(TextureManager textures)
+        public PickupManager(TextureManager textures, SoundManager sound)
         {
             this.textures = textures;
+            this.sound = sound;
         }
 
         public List<Pickup> list = new List<Pickup>();
@@ -36,13 +38,17 @@ namespace pakeman
                     {
                         player.PowerupDuration = 12000;
                         player.state = EntityState.PowerupWall;
+                        sound.powerupInst.Play();
                     }
 
                     if (p.type == PickupType.PowerupEatGhost)
                     {
                         player.PowerupDuration = 12000;
                         player.state = EntityState.PowerupGhost;
+                        sound.powerupInst.Play();
                     }
+
+                    if (p.type == PickupType.Points) { sound.pickupInst.Play(); }
                     killPickup = list.IndexOf(p);
                 }
             }

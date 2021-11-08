@@ -74,12 +74,14 @@ namespace pakeman
     public class Button : BaseObject
     {
         string printedString;
-        public Button(Vector2 pos, Texture2D tex, Rectangle size, string printedString) : base(pos, tex, size)
+        SoundManager sound;
+        public Button(Vector2 pos, Texture2D tex, Rectangle size, string printedString, SoundManager sound) : base(pos, tex, size)
         {
             this.pos = pos;
             this.tex = tex;
             this.size = size;
             this.printedString = printedString;
+            this.sound = sound;
         }
 
         public void Draw(SpriteBatch spriteBatch, SpriteFont spriteFont)
@@ -97,6 +99,7 @@ namespace pakeman
         {
             if (size.Contains(mousePos))
             {
+                sound.buttonInst.Play();
                 return true;
             } else { return false; }
         }
@@ -107,7 +110,6 @@ namespace pakeman
         public Vector2 pos;
         public Texture2D tex;
         public bool lost;
-        private double frameTimer;
         private int frame;
         Rectangle srcRec = new Rectangle(0, 0, 32, 32);
 

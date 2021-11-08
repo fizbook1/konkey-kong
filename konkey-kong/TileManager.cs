@@ -14,16 +14,18 @@ namespace pakeman
 {
     public class TileManager
     {
+        private SoundManager sound;
         TextureManager textures;
         Player player;
         public Tile[,] currentMap = new Tile[36, 27];
         double gateTimer = 0;
         const double GATETIMER = 800;
 
-        public TileManager(TextureManager textures, Player player)
+        public TileManager(TextureManager textures, Player player, SoundManager sound)
         {
             this.textures = textures;
             this.player = player;
+            this.sound = sound;
         }
 
         public void Initialize(PickupManager pickup, EnemyManager enemy)
@@ -36,7 +38,7 @@ namespace pakeman
                 {
                     if (ghostscreated < 3)
                     {
-                        Enemy enemyCreator = new Enemy(t.pos, t.size, textures.ghost, t.posX, t.posY, textures.ghost, textures.ghostscared, ghostscreated);
+                        Enemy enemyCreator = new Enemy(t.pos, t.size, textures.ghost, t.posX, t.posY, textures.ghost, textures.ghostscared, ghostscreated, sound);
                         enemyCreator.respawnTile = t;
                         if(ghostscreated == 1)
                         {
@@ -124,6 +126,7 @@ namespace pakeman
                     {
                         currentMap[player.tilePosX, player.tilePosY].type = TileType.Standard;
                         currentMap[player.tilePosX, player.tilePosY].tex = textures.blank;
+                        sound.crunchInst.Play();
                         foreach (Tile t in currentMap)
                         {
                             if (t.posX > 0 && t.posX < currentMap.GetLength(0) - 1 && t.posY > 0 && t.posY < currentMap.GetLength(1) - 1)

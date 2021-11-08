@@ -14,6 +14,7 @@ namespace pakeman
     
     public class Entity : BaseObject
 {
+    protected SoundManager sound;
     protected Vector2 oldPos;
     
     public bool isMoving = false;
@@ -304,13 +305,14 @@ namespace pakeman
         }
     }
 
-    public Entity(Vector2 pos, Rectangle size, Texture2D tex, int tilePosX, int tilePosY) : base(pos, tex, size)
+    public Entity(Vector2 pos, Rectangle size, Texture2D tex, int tilePosX, int tilePosY, SoundManager sound) : base(pos, tex, size)
     {
         this.pos = pos;
         this.size = size;
         this.tex = tex;
         this.tilePosX = tilePosX;
         this.tilePosY = tilePosY;
+        this.sound = sound;
     }
     }
 
@@ -323,7 +325,7 @@ namespace pakeman
         public int usedGate;
         public double PowerupDuration;
 
-        public Player(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, TextureManager textures) : base(pos, size, tex, tileX, tileY) {
+        public Player(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, TextureManager textures, SoundManager sound) : base(pos, size, tex, tileX, tileY, sound) {
             this.textures = textures;
             }
         public void Update(double time, TileManager tiles)
@@ -332,7 +334,10 @@ namespace pakeman
             if(state == EntityState.PowerupWall || state == EntityState.PowerupGhost)
             {
                 PowerupTimer(time);
-            }
+                tex = textures.pakemanAngy;
+            } 
+            else if (state != EntityState.Death) { tex = textures.pakeman; }
+            
             EntityMove();
             Input();
             Anim(time);
@@ -344,6 +349,7 @@ namespace pakeman
             if (PowerupDuration < 0)
             {
                 state = EntityState.Default;
+                tex = textures.pakeman;
             }
         }
 
@@ -428,6 +434,7 @@ namespace pakeman
             tex = textures.pakemandeath;
             speed = new Vector2(0, 0);
             frame = 0;
+            sound.pakemanDeathInst.Play();
         }
         public void Respawn()
         {
@@ -452,7 +459,7 @@ namespace pakeman
         protected bool stopped;
         public Texture2D defaultTex;
         protected Texture2D scaredTex;
-        public Enemy(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, Texture2D defaultTex, Texture2D scaredTex, int type) : base(pos, size, tex, tileX, tileY)
+        public Enemy(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, Texture2D defaultTex, Texture2D scaredTex, int type, SoundManager sound) : base(pos, size, tex, tileX, tileY, sound)
         {
             this.type = type;
             this.defaultTex = defaultTex;
@@ -645,9 +652,11 @@ namespace pakeman
         {
             if (state != EntityState.Death)
             {
+                
                 state = EntityState.Death;
                 speed = new Vector2(0, 0);
                 frame = 0;
+                sound.ghostDeathInst.Play();
             }
         }
         public void Respawn()
@@ -724,7 +733,7 @@ namespace pakeman
                                 if (!isMoving) { EntityMoveStart(Direction.Down); }
                                 else { queuedDirection = Direction.Down; }
                             }
-                            if (differenceY == 0 )
+                            if (differenceY >= -1 && differenceY <= 1  )
                             {
                                 if(tLeftDown.type != TileType.Wall)
                                 {
@@ -758,7 +767,7 @@ namespace pakeman
                                 if (!isMoving) { EntityMoveStart(Direction.Down); }
                                 else { queuedDirection = Direction.Down; }
                             }
-                            if (differenceY == 0)
+                            if (differenceY >= -1 && differenceY <= 1)
                             {
                                 if (tRightDown.type != TileType.Wall)
                                 {
@@ -795,7 +804,7 @@ namespace pakeman
                                 if (!isMoving) { EntityMoveStart(Direction.Right); }
                                 else { queuedDirection = Direction.Right; }
                             }
-                            if (differenceX == 0)
+                            if (differenceX >= -1 && differenceX <= 1)
                             {
                                 if (tLeftUp.type != TileType.Wall)
                                 {
@@ -830,7 +839,7 @@ namespace pakeman
                                 if (!isMoving) { EntityMoveStart(Direction.Right); }
                                 else { queuedDirection = Direction.Right; }
                             }
-                            if (differenceX == 0)
+                            if (differenceX >= -1 && differenceX <= 1)
                             {
                                 if (tLeftDown.type != TileType.Wall)
                                 {
