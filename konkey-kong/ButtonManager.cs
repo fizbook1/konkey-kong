@@ -24,24 +24,24 @@ namespace pakeman
         }
         public void Initialize(SoundManager sound)
         {
-            settings = new Button(new Vector2(800, 652), textures.smallbutton, new Rectangle(800, 652, 128, 128), "Opts", sound);
+            settings = new Button(new Vector2(800, 652), textures.smallbutton, new Rectangle(800, 652, textures.smallbutton.Width, textures.smallbutton.Height), "Opts", sound);
 
-            start = new Button(new Vector2(220, 195), textures.button, new Rectangle(220, 195, 520, 128), "Start Game", sound);
-            highscore = new Button(new Vector2(220, 340), textures.button, new Rectangle(220, 340, 520, 128), "High Scores", sound);
-            editor = new Button(new Vector2(220, 485), textures.button, new Rectangle(220, 485, 520, 128), "Level Editor", sound);
-            quitGame = new Button(new Vector2(220, 630), textures.button, new Rectangle(220, 630, 520, 128), "Exit Game", sound);
-            credits = new Button(new Vector2(20, 652), textures.smallbutton, new Rectangle(20, 652, 128, 128), "Cred", sound);
+            start = new Button(new Vector2(220, 195), textures.button, new Rectangle(220, 195, textures.button.Width, textures.button.Height), "Start Game", sound);
+            highscore = new Button(new Vector2(220, 340), textures.button, new Rectangle(220, 340, textures.button.Width, textures.button.Height), "High Scores", sound);
+            editor = new Button(new Vector2(220, 485), textures.button, new Rectangle(220, 485, textures.button.Width, textures.button.Height), "Level Editor", sound);
+            quitGame = new Button(new Vector2(220, 630), textures.button, new Rectangle(220, 630, textures.button.Width, textures.button.Height), "Exit Game", sound);
+            credits = new Button(new Vector2(20, 652), textures.smallbutton, new Rectangle(20, 652, textures.smallbutton.Width, textures.smallbutton.Height), "Cred", sound);
 
-            restart = new Button(new Vector2(220, 620), textures.button, new Rectangle(220, 620, 520, 128), "Main Menu", sound);
+            restart = new Button(new Vector2(220, 620), textures.button, new Rectangle(220, 620, textures.button.Width, textures.button.Height), "Main Menu", sound);
 
-            nextLevel = new Button(new Vector2(220, 370), textures.button, new Rectangle(220, 370, 520, 128), "Start Next Level", sound);
-            backtogame = new Button(new Vector2(220, 490), textures.button, new Rectangle(220, 490, 520, 128), "Return", sound);
-            exit = new Button(new Vector2(220, 635), textures.button, new Rectangle(220, 635, 520, 128), "Exit to Title", sound);
+            nextLevel = new Button(new Vector2(220, 370), textures.button, new Rectangle(220, 370, textures.button.Width, textures.button.Height), "Start Next Level", sound);
+            backtogame = new Button(new Vector2(220, 490), textures.button, new Rectangle(220, 490, textures.button.Width, textures.button.Height), "Return", sound);
+            exit = new Button(new Vector2(220, 635), textures.button, new Rectangle(220, 635, textures.button.Width, textures.button.Height), "Exit to Title", sound);
 
-            back = new Button(new Vector2(0, 672), textures.button, new Rectangle(0, 672, 520, 128), "Save and Exit", sound);
-            map1 = new Button(new Vector2(575, 672), textures.smallbutton, new Rectangle(560, 672, 128, 128), "1", sound);
-            map2 = new Button(new Vector2(703, 672), textures.smallbutton, new Rectangle(688, 672, 128, 128), "2", sound);
-            map3 = new Button(new Vector2(831, 672), textures.smallbutton, new Rectangle(816, 672, 128, 128), "3", sound);
+            back = new Button(new Vector2(0, 672), textures.button, new Rectangle(0, 672, textures.button.Width, textures.button.Height), "Save and Exit", sound);
+            map1 = new Button(new Vector2(575, 672), textures.smallbutton, new Rectangle(560, 672, textures.smallbutton.Width, textures.smallbutton.Height), "1", sound);
+            map2 = new Button(new Vector2(703, 672), textures.smallbutton, new Rectangle(688, 672, textures.smallbutton.Width, textures.smallbutton.Height), "2", sound);
+            map3 = new Button(new Vector2(831, 672), textures.smallbutton, new Rectangle(816, 672, textures.smallbutton.Width, textures.smallbutton.Height), "3", sound);
         }
         public void UpdateDraw(GameState state, SpriteBatch spriteBatch, SpriteFont spriteFont, bool paused)
         {

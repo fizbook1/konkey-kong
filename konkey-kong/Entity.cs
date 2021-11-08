@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
 using System.IO;
+using static pakeman.Game1;
 
 namespace pakeman
 {
@@ -15,19 +16,19 @@ namespace pakeman
     public class Entity : BaseObject
 {
     protected SoundManager sound;
-    protected Vector2 oldPos;
     
     public bool isMoving = false;
     public Vector2 speed = new Vector2(0,0);
-    protected Rectangle srcRec = new Rectangle(0, 0, 32, 32);
-    protected int frame = 0;
-    protected double frameTimer = 0;
+    protected float speedMult = 1;
+    protected Vector2 oldPos;
     public EntityState state = EntityState.Default;
     public Direction dir;
-
-    public Tile respawnTile;
     public Direction queuedDirection;
+    public Tile respawnTile;
 
+    protected Rectangle srcRec = new Rectangle(0, 0, TILESIZE, TILESIZE);
+    protected int frame = 0;
+    protected double frameTimer = 0;
     protected SpriteEffects SpriteFx;
     protected float rotation;
 
@@ -51,12 +52,8 @@ namespace pakeman
 
     public void Draw(SpriteBatch spritebatch)
         {
-            Vector2 adjustedPos = new Vector2(pos.X + 16, pos.Y + 16);
-            spritebatch.Draw(tex, adjustedPos, srcRec, Color.White, rotation, new Vector2(16,16), 1, SpriteFx, 1);
-            if(state == EntityState.Scared)
-            {
-                spritebatch.Draw(tex, adjustedPos, srcRec, Color.LightCyan, rotation, new Vector2(16, 16), 1, SpriteFx, 1);
-            }
+            Vector2 adjustedPos = new Vector2(pos.X + TILESIZE/2, pos.Y + TILESIZE / 2);
+            spritebatch.Draw(tex, adjustedPos, srcRec, Color.White, rotation, new Vector2(TILESIZE / 2, TILESIZE / 2), 1, SpriteFx, 1);
         }
         public void NeighborTiles(Tile[] tiles)
         {
@@ -110,12 +107,8 @@ namespace pakeman
                 case Direction.Left:
                     if(tLeft.type != TileType.Wall || state == EntityState.PowerupWall && tLeft.posX > 1) 
                     { 
-                        if(state == EntityState.Scared)
-                        {
-                            speed.X = -1;
-                        } else 
                         { 
-                            speed.X = -2; 
+                            speed.X = -2 * speedMult; 
                         }
                         
                         isMoving = true;
@@ -127,13 +120,8 @@ namespace pakeman
                 case Direction.Right:
                     if (tRight.type != TileType.Wall || state == EntityState.PowerupWall && tRight.posX < 35)
                     {
-                        if (state == EntityState.Scared)
                         {
-                            speed.X = 1;
-                        }
-                        else
-                        {
-                            speed.X = 2;
+                            speed.X = 2* speedMult;
                         }
                         isMoving = true;
                         oldPos.X = pos.X;
@@ -144,13 +132,8 @@ namespace pakeman
                 case Direction.Down:
                     if (tDown.type != TileType.Wall || state == EntityState.PowerupWall && tDown.posY < 25)
                     {
-                        if (state == EntityState.Scared)
                         {
-                            speed.Y = 1;
-                        }
-                        else
-                        {
-                            speed.Y = 2;
+                            speed.Y = 2 * speedMult;
                         }
                         isMoving = true;
                         oldPos.Y = pos.Y;
@@ -161,13 +144,8 @@ namespace pakeman
                 case Direction.Up:
                     if (tUp.type != TileType.Wall || state == EntityState.PowerupWall && tUp.posY > 1)
                     {
-                        if (state == EntityState.Scared)
                         {
-                            speed.Y = -1;
-                        }
-                        else
-                        {
-                            speed.Y = -2;
+                            speed.Y = -2 * speedMult;
                         }
                         isMoving = true;
                         oldPos.Y = pos.Y;
@@ -197,13 +175,12 @@ namespace pakeman
         {
             
             pos += speed;
-            
             size.X = (int)pos.X;
             size.Y = (int)pos.Y;   
             
-            if (oldPos.Y + 32 <= pos.Y && speed.Y > 0)
+            if (oldPos.Y + TILESIZE <= pos.Y && speed.Y > 0)
             {
-                pos.Y = oldPos.Y + 32;
+                pos.Y = oldPos.Y + TILESIZE;
                 isMoving = false;
                 speed.Y = 0;
                 tilePosY++;
@@ -214,9 +191,9 @@ namespace pakeman
                     }
             }
 
-            if (oldPos.Y - 32 >= pos.Y && speed.Y < 0)
+            if (oldPos.Y - TILESIZE >= pos.Y && speed.Y < 0)
             {
-                pos.Y = oldPos.Y - 32;
+                pos.Y = oldPos.Y - TILESIZE;
                 isMoving = false;
                 speed.Y = 0;
                 tilePosY--;
@@ -227,9 +204,9 @@ namespace pakeman
                     }
                 }
 
-            if (oldPos.X + 32 <= pos.X && speed.X > 0)
+            if (oldPos.X + TILESIZE <= pos.X && speed.X > 0)
             {
-                pos.X = oldPos.X + 32;
+                pos.X = oldPos.X + TILESIZE;
                 isMoving = false;
                 speed.X = 0;
                 tilePosX++;
@@ -240,9 +217,9 @@ namespace pakeman
                     }
                 }
 
-            if (oldPos.X - 32 >= pos.X && speed.X < 0)
+            if (oldPos.X - TILESIZE >= pos.X && speed.X < 0)
             {
-                pos.X = oldPos.X - 32;
+                pos.X = oldPos.X - TILESIZE;
                 isMoving = false;
                 speed.X = 0;
                 tilePosX--;
@@ -668,14 +645,16 @@ namespace pakeman
             frame = 0;
             isMoving = false;
         }
-        public void ToggleTex()
+        public void ToggleState()
         {
             if(state == EntityState.Scared)
             {
+                speedMult = 0.5F;
                 tex = scaredTex;
             }
             else
             {
+                speedMult = 1F;
                 tex = defaultTex;
             }
 

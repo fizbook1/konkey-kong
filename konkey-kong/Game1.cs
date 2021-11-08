@@ -15,7 +15,7 @@ namespace pakeman
     public class Game1 : Game
     {
         Random rnd = new Random();
-        const int TILESIZE = 32;
+        public const int TILESIZE = 32;
 
         public enum GameState { Title = 0, InGame = 1, GameOver = 2, Menu = 3, LevelEditor = 4, Credits = 5, Settings = 6 }
 

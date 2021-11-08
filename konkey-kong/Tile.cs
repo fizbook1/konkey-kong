@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
 using System.IO;
+using static pakeman.Game1;
 
 namespace pakeman
 {
@@ -13,7 +14,7 @@ namespace pakeman
     public class Tile : BaseObject
     {
         public TileType type;
-        private Rectangle srcrec = new Rectangle(0,0,32,32);
+        private Rectangle srcrec = new Rectangle(0,0,TILESIZE,TILESIZE);
         private SpriteEffects SpriteFx;
         private float rotation;
         public int posX;
@@ -45,11 +46,11 @@ namespace pakeman
             if (t7.type == TileType.Wall) { botWall = true; }        else { botWall = false; }
             if (t8.type == TileType.Wall) { botRightCorner = true; } else { botRightCorner = false; }
             
-            srcrec.X = 32; srcrec.Y = 96;
+            srcrec.X = TILESIZE; srcrec.Y = TILESIZE*3;
 
             if (topLeftCorner && topRightCorner && botLeftCorner && botRightCorner && topWall && leftWall && rightWall && botWall ) 
             { 
-                srcrec.X = 32; srcrec.Y = 64; 
+                srcrec.X = TILESIZE; srcrec.Y = TILESIZE*2; 
                 SpriteFx = SpriteEffects.None;
                 rotation = MathHelper.ToRadians(0);
             }
@@ -57,25 +58,25 @@ namespace pakeman
             { 
                 if (!topWall && leftWall && rightWall && botWall) 
                 { 
-                    srcrec.X = 64; srcrec.Y = 64; 
+                    srcrec.X = TILESIZE * 2; srcrec.Y = TILESIZE * 2; 
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (topWall && !leftWall && rightWall && botWall) 
-                { 
-                    srcrec.X = 64; srcrec.Y = 64;
+                {
+                    srcrec.X = TILESIZE * 2; srcrec.Y = TILESIZE * 2;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
                 if (topWall && leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 64;
+                    srcrec.X = TILESIZE * 2; srcrec.Y = TILESIZE * 2;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (topWall && leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 64;
+                    srcrec.X = TILESIZE * 2; srcrec.Y = TILESIZE * 2;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
@@ -84,13 +85,13 @@ namespace pakeman
             {
                 if (topWall && !leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 32;
+                    srcrec.X = TILESIZE * 2; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (!topWall && leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 32;
+                    srcrec.X = TILESIZE * 2; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
@@ -99,25 +100,25 @@ namespace pakeman
             {
                 if (botRightCorner && !topWall && !leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 0;
+                    srcrec.X = TILESIZE; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (botLeftCorner && !topWall && leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 0;
+                    srcrec.X = TILESIZE; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (topLeftCorner &&topWall && leftWall && !rightWall && !botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 0;
+                    srcrec.X = TILESIZE; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if ( topRightCorner  && topWall && !leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 0;
+                    srcrec.X = TILESIZE; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
@@ -155,25 +156,25 @@ namespace pakeman
             {
                 if (!botRightCorner && !topWall && !leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 32;
+                    srcrec.X = TILESIZE; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (!botLeftCorner && !topWall && leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 32;
+                    srcrec.X = TILESIZE; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (!topLeftCorner &&  topWall && leftWall && !rightWall && !botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 32;
+                    srcrec.X = TILESIZE; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (!topRightCorner  && topWall && !leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 32; srcrec.Y = 32;
+                    srcrec.X = TILESIZE; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
@@ -182,25 +183,25 @@ namespace pakeman
             {
                 if (topWall && !leftWall && !rightWall && !botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*2; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (!topWall && leftWall && !rightWall && !botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*2; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (!topWall && !leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*2; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
                 if (!topWall && !leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*2; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
@@ -209,25 +210,25 @@ namespace pakeman
             {
                 if (!topLeftCorner && topRightCorner && !botLeftCorner && botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 32;
+                    srcrec.X = 0; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (!topLeftCorner && !topRightCorner && botLeftCorner && botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 32;
+                    srcrec.X = 0; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (topLeftCorner && !topRightCorner && botLeftCorner && !botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 32;
+                    srcrec.X = 0; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (topLeftCorner && topRightCorner && !botLeftCorner && !botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 32;
+                    srcrec.X = 0; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
@@ -236,25 +237,25 @@ namespace pakeman
             {
                 if (!topLeftCorner && !topRightCorner && topWall && leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 32;
+                    srcrec.X = TILESIZE*3; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (!botRightCorner && !topRightCorner && topWall && !leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 32;
+                    srcrec.X = TILESIZE*3; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (!botRightCorner && !botLeftCorner && !topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 32;
+                    srcrec.X = TILESIZE*3; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (!topLeftCorner && !botLeftCorner && topWall && leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 32;
+                    srcrec.X = TILESIZE*3; srcrec.Y = TILESIZE;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
@@ -265,49 +266,49 @@ namespace pakeman
             {
                 if (topLeftCorner && !topRightCorner && topWall && leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (!topLeftCorner && topRightCorner && topWall && leftWall && rightWall && !botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.FlipHorizontally;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (botRightCorner && !topRightCorner && topWall && !leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.FlipHorizontally;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (!botRightCorner && topRightCorner && topWall && !leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (botRightCorner && !botLeftCorner && !topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (!botRightCorner && botLeftCorner && !topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.FlipHorizontally;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (botLeftCorner && !topLeftCorner && topWall && leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
                 if (!botLeftCorner && topLeftCorner && topWall && leftWall && !rightWall && botWall)
                 {
-                    srcrec.X = 96; srcrec.Y = 0;
+                    srcrec.X = TILESIZE*3; srcrec.Y = 0;
                     SpriteFx = SpriteEffects.FlipHorizontally;
                     rotation = MathHelper.ToRadians(270);
                 }
@@ -317,25 +318,25 @@ namespace pakeman
             {
                 if (!topLeftCorner && !topRightCorner && !botLeftCorner && botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 64;
+                    srcrec.X = 0; srcrec.Y = TILESIZE*2;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (!topLeftCorner && !topRightCorner && botLeftCorner && !botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 64;
+                    srcrec.X = 0; srcrec.Y = TILESIZE*2;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
                 if (topLeftCorner && !topRightCorner && !botLeftCorner && !botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 64;
+                    srcrec.X = 0; srcrec.Y = TILESIZE*2;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(180);
                 }
                 if (!topLeftCorner && topRightCorner && !botLeftCorner && !botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 64;
+                    srcrec.X = 0; srcrec.Y = TILESIZE*2;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(270);
                 }
@@ -344,13 +345,13 @@ namespace pakeman
             {
                 if (!topLeftCorner && topRightCorner && botLeftCorner && !botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 96;
+                    srcrec.X = TILESIZE*2; srcrec.Y = TILESIZE*3;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
                 if (topLeftCorner && !topRightCorner && !botLeftCorner && botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 64; srcrec.Y = 96;
+                    srcrec.X = TILESIZE*2; srcrec.Y = TILESIZE*3;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(90);
                 }
@@ -359,18 +360,18 @@ namespace pakeman
             {
                 if (!topLeftCorner && !topRightCorner && !botLeftCorner && !botRightCorner && topWall && leftWall && rightWall && botWall)
                 {
-                    srcrec.X = 0; srcrec.Y = 96;
+                    srcrec.X = 0; srcrec.Y = TILESIZE*3;
                     SpriteFx = SpriteEffects.None;
                     rotation = MathHelper.ToRadians(0);
                 }
             }
-            //srcrec.X = 64; srcrec.Y = 128;
+            //srcrec.X = TILESIZE*2; srcrec.Y = 128;
         }
 
         public void Draw(SpriteBatch spritebatch/* SpriteFont font*/)
         {
-            Vector2 adjustedPos = new Vector2(pos.X + 16, pos.Y + 16);
-            spritebatch.Draw(tex, adjustedPos, srcrec, Color.White, rotation, new Vector2(16, 16), 1, SpriteFx, 1);
+            Vector2 adjustedPos = new Vector2(pos.X + TILESIZE/2, pos.Y + TILESIZE/2);
+            spritebatch.Draw(tex, adjustedPos, srcrec, Color.White, rotation, new Vector2(TILESIZE / 2, TILESIZE / 2), 1, SpriteFx, 1);
             //spritebatch.DrawString(font, posX.ToString(), new Vector2(pos.X, pos.Y), Color.White);
             //spritebatch.DrawString(font, posY.ToString(), new Vector2(pos.X, pos.Y+12), Color.White);
         }

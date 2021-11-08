@@ -36,7 +36,7 @@ namespace pakeman
                     e.state = EntityState.Default;
                 }
                 e.Anim(time);
-                e.ToggleTex();
+                e.ToggleState();
 
                 Collision(e, player, score);
             }
