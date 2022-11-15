@@ -17,7 +17,7 @@ namespace pakeman
         private SoundManager sound;
         TextureManager textures;
         Player player;
-        public Tile[,] currentMap = new Tile[36, 27];
+        public static Tile[,] currentMap = new Tile[36, 27];
         double gateTimer = 0;
         const double GATETIMER = 800;
 
@@ -27,7 +27,7 @@ namespace pakeman
             this.player = player;
             this.sound = sound;
         }
-
+        
         public void Initialize(PickupManager pickup, EnemyManager enemy)
         {
             int ghostscreated = 0;
@@ -85,6 +85,7 @@ namespace pakeman
             player.Death();
             player.health++;
 
+            pickup.total = pickup.list.Count;
         }
 
         public Tile[] NeighborTiles(int posX, int posY)

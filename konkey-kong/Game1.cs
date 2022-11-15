@@ -40,7 +40,7 @@ namespace pakeman
         Rectangle editorNullZone;
         int currentlyEditedMap = 1;
 
-        private SpriteFont font;
+        public static SpriteFont font;
         private SpriteFont bigFont;
         Vector2 mousePos;
         bool mouseLReady = false;
@@ -196,7 +196,7 @@ namespace pakeman
                         {
                             scoreCalculated = false;
                             gameState = GameState.InGame;
-                            tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
+                            TileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
                             tileManager.Initialize(pickupManager, enemyManager);
                         }
                         if(buttonManager.highscore.Update(mousePos))
@@ -206,7 +206,7 @@ namespace pakeman
                         if (buttonManager.editor.Update(mousePos))
                         {
                             gameState = GameState.LevelEditor;
-                            tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
+                            TileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
                         }
                         if (buttonManager.quitGame.Update(mousePos))
                         {
@@ -306,7 +306,7 @@ namespace pakeman
                         } else if (buttonManager.nextLevel.Update(mousePos))
                         {
                             currentMap++;
-                            tileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
+                            TileManager.currentMap = (Tile[,])mapList[currentMap].Clone();
                             tileManager.Initialize(pickupManager, enemyManager);
                             gameState = GameState.InGame;
                         }
@@ -413,44 +413,44 @@ namespace pakeman
                         if(buttonManager.map1.Update(mousePos))
                         {
                             currentlyEditedMap = 1;
-                            tileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
+                            TileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
                         }
                         if (buttonManager.map2.Update(mousePos))
                         {
                             currentlyEditedMap = 2;
-                            tileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
+                            TileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
                         }   
                         if (buttonManager.map3.Update(mousePos))
                         {
                             currentlyEditedMap = 3;
-                            tileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
+                            TileManager.currentMap = (Tile[,])mapList[currentlyEditedMap - 1].Clone();
                         }
                         if (buttonManager.back.Update(mousePos))
                         {
                             StringBuilder stringToAdd = new StringBuilder(50);
                             gameState = GameState.Title;
                             char[,] types = new char[36, 27];
-                            for (int i = 0; i < tileManager.currentMap.GetLength(1); i++)
+                            for (int i = 0; i < TileManager.currentMap.GetLength(1); i++)
                             {
-                                for (int j = 0; j < tileManager.currentMap.GetLength(0); j++)
+                                for (int j = 0; j < TileManager.currentMap.GetLength(0); j++)
                                 {
-                                    if (tileManager.currentMap[j, i].type == TileType.Wall)
+                                    if (TileManager.currentMap[j, i].type == TileType.Wall)
                                     {
                                         types[j, i] = 'X';
                                     }
-                                    if (tileManager.currentMap[j, i].type == TileType.Standard)
+                                    if (TileManager.currentMap[j, i].type == TileType.Standard)
                                     {
                                         types[j, i] = 'o';
                                     }
-                                    if (tileManager.currentMap[j, i].type == TileType.PacmanSpawn)
+                                    if (TileManager.currentMap[j, i].type == TileType.PacmanSpawn)
                                     {
                                         types[j, i] = 'p';
                                     }
-                                    if (tileManager.currentMap[j, i].type == TileType.PowerUpSpawn)
+                                    if (TileManager.currentMap[j, i].type == TileType.PowerUpSpawn)
                                     {
                                         types[j, i] = 'P';
                                     }
-                                    if (tileManager.currentMap[j, i].type == TileType.GhostSpawn)
+                                    if (TileManager.currentMap[j, i].type == TileType.GhostSpawn)
                                     {
                                         types[j, i] = 'e';
                                     }

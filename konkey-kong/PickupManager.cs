@@ -19,6 +19,8 @@ namespace pakeman
         const double BIGPICKUPTIMER = 20000;
         int bigPickupsCreated = 0;
         bool bigPickupCreated = false;
+        public int total;
+        public int current;
         public PickupManager(TextureManager textures, SoundManager sound)
         {
             this.textures = textures;
@@ -28,6 +30,16 @@ namespace pakeman
         public List<Pickup> list = new List<Pickup>();
         public void Update(double time, Player player, ScoreManager score, TileManager tiles)
         {
+            if(current < total / 2)
+            {
+                EnemyManager.world.halfFoodLeft = true;
+            }
+            else
+            {
+                EnemyManager.world.halfFoodLeft = false;
+            }
+            
+            current = list.Count;
             int? killPickup = null;
             foreach (Pickup p in list)
             {
@@ -83,28 +95,28 @@ namespace pakeman
         private void CreateBigPickup(TileManager tiles)
         {
             Random rnd = new Random();
-            int pickupRandX = rnd.Next(4, tiles.currentMap.GetLength(0));
-            int pickupRandY = rnd.Next(4, tiles.currentMap.GetLength(1));
+            int pickupRandX = rnd.Next(4, TileManager.currentMap.GetLength(0));
+            int pickupRandY = rnd.Next(4, TileManager.currentMap.GetLength(1));
 
-            if (tiles.currentMap[pickupRandX, pickupRandY].type == TileType.Standard)
+            if (TileManager.currentMap[pickupRandX, pickupRandY].type == TileType.Standard)
             {
                 if (bigPickupsCreated == 0)
                 {
-                    BigPickup pickupCreator = new BigPickup(tiles.currentMap[pickupRandX, pickupRandY].pos, textures.cherry, tiles.currentMap[pickupRandX, pickupRandY].size);
+                    BigPickup pickupCreator = new BigPickup(TileManager.currentMap[pickupRandX, pickupRandY].pos, textures.cherry, TileManager.currentMap[pickupRandX, pickupRandY].size);
                     pickupCreator.value = 200;
                     pickupCreator.BigPickupCreation();
                     list.Add(pickupCreator);
                 }
                 if (bigPickupsCreated == 1)
                 {
-                    BigPickup pickupCreator = new BigPickup(tiles.currentMap[pickupRandX, pickupRandY].pos, textures.strawberry, tiles.currentMap[pickupRandX, pickupRandY].size);
+                    BigPickup pickupCreator = new BigPickup(TileManager.currentMap[pickupRandX, pickupRandY].pos, textures.strawberry, TileManager.currentMap[pickupRandX, pickupRandY].size);
                     pickupCreator.value = 350;
                     pickupCreator.BigPickupCreation();
                     list.Add(pickupCreator);
                 }
                 if (bigPickupsCreated == 2)
                 {
-                    BigPickup pickupCreator = new BigPickup(tiles.currentMap[pickupRandX, pickupRandY].pos, textures.orange, tiles.currentMap[pickupRandX, pickupRandY].size);
+                    BigPickup pickupCreator = new BigPickup(TileManager.currentMap[pickupRandX, pickupRandY].pos, textures.orange, TileManager.currentMap[pickupRandX, pickupRandY].size);
                     pickupCreator.value = 500;
                     pickupCreator.BigPickupCreation();
                     list.Add(pickupCreator);

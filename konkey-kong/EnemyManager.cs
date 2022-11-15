@@ -15,13 +15,31 @@ namespace pakeman
     {
         TextureManager textures;
         public List<Enemy> enemies = new List<Enemy>();
-
+        public static WorldState world = new WorldState();
+        public static Enemy chasingEnemy;
+        double currentTimer = 3000;
+        const double CURRENTTIMER = 3000;
         public EnemyManager(TextureManager textures)
         {
             this.textures = textures;
         }
         public void Update(double time, Player player, ScoreManager score, TileManager tiles)
         {
+            if(player.PowerupDuration > 0)
+            {
+                world.isPoweredUp = true;
+            }
+            else
+            {
+                world.isPoweredUp = false;
+            }
+            currentTimer -= time;
+            if(currentTimer < 0)
+            {
+                currentTimer = CURRENTTIMER;
+                chasingEnemy = enemies[new Random().Next(0, 3)];
+            }
+            
             foreach (Enemy e in enemies)
             {
                 e.NeighborTiles(tiles.NeighborTiles(e.tilePosX, e.tilePosY));
@@ -29,7 +47,7 @@ namespace pakeman
                 if(player.state == EntityState.PowerupGhost && e.state != EntityState.Death)
                 {
                     e.state = EntityState.Scared;
-                    e.Scared(player);
+                //    e.Scared(player);
                 } else { e.ArtificialIntelligence(player); }
                 if(player.state != EntityState.PowerupGhost && e.state != EntityState.Death)
                 {
