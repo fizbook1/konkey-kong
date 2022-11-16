@@ -73,7 +73,8 @@ namespace pakeman
         public void Roam()
         {
             Random rnd = new Random();
-            
+            if(!isMoving)
+            EntityMoveStart((Direction)rnd.Next(0, 4));
             if (timeRoamed > rnd.Next(0, 10))
             {
                 queuedDirection = (Direction)rnd.Next(0, 4);
@@ -90,15 +91,20 @@ namespace pakeman
 
         public void Chase()
         {
-            Point gohere = new Point();
-            //if(!isMoving)
-            //{
-                Graph graph = new Graph(TileManager.currentMap);
-                gohere = graph.NextMove(new Point(tilePosX, tilePosY), Player.location);
+            //Point gohere = new Point();
+            ////if(!isMoving)
+            ////{
+            //    Graph graph = new Graph(TileManager.currentMap);
+            //    gohere = graph.NextMove(new Point(tilePosX, tilePosY), Player.location);
             //}
 
             if (!isMoving)
             {
+                Point gohere = new Point();
+                //if(!isMoving)
+                //{
+                Graph graph = new Graph(TileManager.currentMap);
+                gohere = graph.NextMove(new Point(tilePosX, tilePosY), Player.location);
                 if (gohere.X < tilePosX)
                 {
                     EntityMoveStart((Direction)0);
@@ -118,6 +124,26 @@ namespace pakeman
             }
             if (isMoving)
             {
+                Point gohere = new Point();
+                //if(!isMoving)
+                //{
+                Graph graph = new Graph(TileManager.currentMap);
+                switch(dir)
+                {
+                    case Direction.Left:
+                        gohere = graph.NextMove(new Point(tilePosX -1 , tilePosY), Player.location);
+                        break;
+                    case Direction.Right:
+                        gohere = graph.NextMove(new Point(tilePosX + 1, tilePosY), Player.location);
+                        break;
+                    case Direction.Up:
+                        gohere = graph.NextMove(new Point(tilePosX, tilePosY - 1), Player.location);
+                        break;
+                    case Direction.Down:
+                        gohere = graph.NextMove(new Point(tilePosX, tilePosY + 1), Player.location);
+                        break;
+                }
+                
                 if (gohere.X < tilePosX)
                 {
 
