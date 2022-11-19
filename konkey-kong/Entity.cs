@@ -31,20 +31,20 @@ namespace pakeman
     protected SpriteEffects SpriteFx;
     protected float rotation;
 
-    protected Tile tLeft;
-    protected Tile tUp;
-    protected Tile tRight;
-    protected Tile tDown;
+    public Tile tLeft;
+    public Tile tUp;
+    public Tile tRight;
+    public Tile tDown;
 
-    protected Tile tFarLeft;
-    protected Tile tFarUp;
-    protected Tile tFarRight;
-    protected Tile tFarDown;
+    public Tile tFarLeft;
+    public Tile tFarUp;
+    public Tile tFarRight;
+    public Tile tFarDown;
 
-    protected Tile tLeftUp;
-    protected Tile tRightUp;
-    protected Tile tLeftDown;
-    protected Tile tRightDown;
+    public Tile tLeftUp;
+    public Tile tRightUp;
+    public Tile tLeftDown;
+    public Tile tRightDown;
 
     public int tilePosX;
     public int tilePosY;
