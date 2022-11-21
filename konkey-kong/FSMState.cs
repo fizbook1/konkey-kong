@@ -8,7 +8,14 @@ namespace pakeman
     public class Context
     {
         FSMState state;
-        Enemy enemy;
+        public Enemy enemy;
+        public static bool playerPowerup = false;
+        public Context(Enemy self, FSMState defaultState)
+        {
+            enemy = self;
+            state = defaultState;
+            state.Enter(this);
+        }
         public void ChangeState(FSMState _state)
         {
             state.Exit();
@@ -42,6 +49,9 @@ namespace pakeman
             rnd = new Random();
             timeRoamed = 0;
             untilNewDir = 0;
+            self = context.enemy;
+            self.behavior = EnemyBehavior.Roam;
+
         }
         public override void Update()
         {
@@ -59,6 +69,14 @@ namespace pakeman
             }
             untilNewDir++;
             timeRoamed++;
+            if (timeRoamed > rnd.Next(0, 10000))
+            {
+                context.ChangeState(new StateChase());
+            }
+            if (Context.playerPowerup)
+            {
+                context.ChangeState(new StateFlee());
+            }
         }
         public override void Exit()
         {
@@ -71,6 +89,8 @@ namespace pakeman
         {
             this.context = context;
             type = 1;
+            self = context.enemy;
+            self.behavior = EnemyBehavior.Flee;
         }
         public override void Update()
         {
@@ -325,21 +345,37 @@ namespace pakeman
 
 
             }
+            if (!Context.playerPowerup)
+            {
+                context.ChangeState(new StateRoam());
+            }
         }
         public override void Exit()
         {
-            throw new NotImplementedException();
+            
         }
     }
     public class StateChase : FSMState
     {
+        Random rnd;
+        int timeChased;
         public override void Enter(Context context)
         {
             this.context = context;
             type = 2;
+            timeChased = 0;
+            rnd = new Random();
+            self = context.enemy;
+            self.behavior = EnemyBehavior.Chase;
+
         }
         public override void Update()
         {
+            if(timeChased > rnd.Next(0, 10000))
+            {
+                context.ChangeState(new StateRoam());
+            }
+            timeChased++;
             if (!self.isMoving)
             {
                 Point gohere = new Point();
@@ -404,10 +440,15 @@ namespace pakeman
                     self.queuedDirection = (Direction)3;
                 }
             }
+
+            if(Context.playerPowerup)
+            {
+                context.ChangeState(new StateFlee());
+            }
         }
         public override void Exit()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

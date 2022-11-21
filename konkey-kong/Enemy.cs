@@ -17,11 +17,13 @@ namespace pakeman
         public Texture2D defaultTex;
         public EnemyBehavior behavior = EnemyBehavior.Roam;
         protected Texture2D scaredTex;
+        Context fsm;
         public Enemy(Vector2 pos, Rectangle size, Texture2D tex, int tileX, int tileY, Texture2D defaultTex, Texture2D scaredTex, int type, SoundManager sound) : base(pos, size, tex, tileX, tileY, sound)
         {
             this.type = type;
             this.defaultTex = defaultTex;
             this.scaredTex = scaredTex;
+            fsm = new Context(this, new StateRoam());
         }
         public void Anim(double time)
         {
@@ -364,8 +366,11 @@ namespace pakeman
         }
         public void ArtificialIntelligence(Player player)
         {
+            //for DT 
+            //DetermineBehavior();
 
-            DetermineBehavior();
+            //for FSM
+            fsm.Update();
 
             Random rnd = new Random();
             Direction chosenDir2;
